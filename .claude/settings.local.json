@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(textutil -convert txt -output ich2p_spec.txt \"/Users/leaabarentos/Downloads/Website Project_ ICH2P.docx\")",
+      "Bash(textutil -convert txt -output plan_v2.txt \"/Users/leaabarentos/Downloads/DLSL_ICMET_Website_Project_Plan_v2.docx\")",
+      "Bash(echo \"exit:$?\")"
+    ]
+  }
+}

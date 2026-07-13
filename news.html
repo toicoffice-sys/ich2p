@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="17th ICH2P 2026 News and Announcements — latest updates from De La Salle Lipa and the organizing committee.">
+  <title>News — 17th ICH2P 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;">
+        <img src="assets/logo-dlsl.png" alt="De La Salle Lipa" class="logo-dlsl">
+        <span class="brand-divider"></span>
+        <img src="assets/logo-ich2p.svg" alt="ICH2P 2026" class="logo-icmet">
+      </a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li class="dropdown">
+        <a href="#">Conference <i class="fas fa-chevron-down" style="font-size:10px;"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="committees.html">Committee</a></li>
+          <li><a href="topics.html">Topics</a></li>
+          <li><a href="speakers.html">Speakers</a></li>
+          <li><a href="programme.html">Programme</a></li>
+        </ul>
+      </li>
+      <li><a href="venue.html">Venue</a></li>
+      <li><a href="news.html">News</a></li>
+      <li><a href="abstract-submission.html" class="nav-cta-secondary">Submit Abstract</a></li>
+      <li><a href="registration.html" class="nav-cta-primary">Register</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container page-header-content">
+    <div class="page-breadcrumb">
+      <a href="index.html">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>News</span>
+    </div>
+    <h1>News &amp; Announcements</h1>
+    <p class="lead">Latest updates from DLSL and the ICH2P 2026 Organizing Committee.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="info-box info-box-gold reveal" style="margin-bottom:40px;">
+      <div class="info-box-title"><i class="fas fa-rss"></i> Live Updates</div>
+      Announcements below are fetched in real time from the DLSL organizing committee's system. The committee posts updates directly — no page refresh needed for new announcements.
+    </div>
+
+    <!-- Dynamic announcements from Google Sheets via Apps Script -->
+    <div class="news-grid" id="newsGrid">
+      <!-- Skeleton placeholders shown until JS loads -->
+      <div class="news-card">
+        <div class="news-card-body">
+          <div class="skeleton" style="height:14px;width:80px;margin-bottom:12px;"></div>
+          <div class="skeleton" style="height:22px;width:90%;margin-bottom:10px;"></div>
+          <div class="skeleton" style="height:14px;width:100%;margin-bottom:6px;"></div>
+          <div class="skeleton" style="height:14px;width:75%;"></div>
+        </div>
+      </div>
+      <div class="news-card">
+        <div class="news-card-body">
+          <div class="skeleton" style="height:14px;width:80px;margin-bottom:12px;"></div>
+          <div class="skeleton" style="height:22px;width:85%;margin-bottom:10px;"></div>
+          <div class="skeleton" style="height:14px;width:100%;margin-bottom:6px;"></div>
+          <div class="skeleton" style="height:14px;width:65%;"></div>
+        </div>
+      </div>
+      <div class="news-card">
+        <div class="news-card-body">
+          <div class="skeleton" style="height:14px;width:80px;margin-bottom:12px;"></div>
+          <div class="skeleton" style="height:22px;width:88%;margin-bottom:10px;"></div>
+          <div class="skeleton" style="height:14px;width:100%;margin-bottom:6px;"></div>
+          <div class="skeleton" style="height:14px;width:70%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fallback static announcements shown if Apps Script is not yet configured -->
+    <noscript>
+      <div class="news-grid">
+        <article class="news-card">
+          <div class="news-card-body">
+            <span class="news-tag">Launch</span>
+            <div class="news-date">July 2026</div>
+            <h3 class="news-title">17th ICH2P 2026 Conference Website Launched</h3>
+            <p class="news-excerpt">De La Salle Lipa officially launches the conference website for the 17th ICH2P 2026. Abstract submissions are now open.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-card-body">
+            <span class="news-tag">Abstracts</span>
+            <div class="news-date">July 2026</div>
+            <h3 class="news-title">Abstract Submission Now Open</h3>
+            <p class="news-excerpt">Submit your 300–500 word abstract before October 15, 2026 for consideration by the Organizing Committee.</p>
+          </div>
+        </article>
+      </div>
+    </noscript>
+
+    <div style="text-align:center;margin-top:48px;" class="reveal">
+      <p style="color:var(--gray-500);font-size:var(--text-sm);margin-bottom:20px;">
+        For the latest updates, contact the organizing committee.
+      </p>
+      <a href="mailto:ich2p.dlsl@gmail.com" class="btn btn-outline-green">
+        <i class="fas fa-envelope"></i> Contact the Organizing Committee
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <img src="assets/logo-dlsl.png" alt="DLSL" class="footer-logo">
+        <p>17th ICH2P 2026 — International Conference on Hydrogen Production, hosted at De La Salle Lipa, Lipa City, Batangas, Philippines.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="about.html">About ICH2P</a></li>
+          <li><a href="committees.html">Committee</a></li>
+          <li><a href="topics.html">Topics</a></li>
+          <li><a href="speakers.html">Speakers</a></li>
+          <li><a href="programme.html">Programme</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Important Dates</h5>
+        <ul>
+          <li>Abstract: Open until Oct 15, 2026</li>
+          <li>Regular Reg: Nov 15, 2026</li>
+          <li>Late Reg: Dec 5, 2026</li>
+          <li>Conference: Dec 17–19, 2026</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <div class="footer-contact-item"><i class="fas fa-envelope"></i><span>ich2p.dlsl@gmail.com</span></div>
+        <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Learning Resource Center, De La Salle Lipa, Lipa City, Batangas, Philippines</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <p>&copy; 2026 De La Salle Lipa · 17th ICH2P. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+
+</body>
+</html>

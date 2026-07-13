@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Register for the 17th ICH2P 2026 — fees, deadlines, and registration details.">
+  <title>Registration — 17th ICH2P 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;">
+        <img src="assets/logo-dlsl.png" alt="De La Salle Lipa" class="logo-dlsl">
+        <span class="brand-divider"></span>
+        <img src="assets/logo-ich2p.svg" alt="ICH2P 2026" class="logo-icmet">
+      </a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li class="dropdown">
+        <a href="#">Conference <i class="fas fa-chevron-down" style="font-size:10px;"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="committees.html">Committee</a></li>
+          <li><a href="topics.html">Topics</a></li>
+          <li><a href="speakers.html">Speakers</a></li>
+          <li><a href="programme.html">Programme</a></li>
+        </ul>
+      </li>
+      <li><a href="venue.html">Venue</a></li>
+      <li><a href="news.html">News</a></li>
+      <li><a href="abstract-submission.html" class="nav-cta-secondary">Submit Abstract</a></li>
+      <li><a href="registration.html" class="nav-cta-primary">Register</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container page-header-content">
+    <div class="page-breadcrumb">
+      <a href="index.html">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Registration</span>
+    </div>
+    <h1>Conference Registration</h1>
+    <p class="lead">Register for the 17th ICH2P 2026. Full registration procedures will follow your abstract acceptance notification.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="max-width:900px;margin:0 auto;">
+
+      <!-- Fee Schedule -->
+      <div class="reveal" style="margin-bottom:40px;">
+        <h3 style="color:var(--g900);margin-bottom:16px;"><i class="fas fa-tag" style="color:var(--gold);margin-right:8px;"></i> Registration Fees</h3>
+        <div style="overflow-x:auto;">
+          <table class="fee-table">
+            <thead>
+              <tr>
+                <th>Participant</th>
+                <th>Regular</th>
+                <th>Late</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-fee="ug_ph">
+                <td><strong>Undergraduate Student (PH)</strong></td>
+                <td class="fee-highlight">Php4,000</td>
+                <td>Php6,000</td>
+              </tr>
+              <tr data-fee="grad_ph">
+                <td><strong>Graduate Student (PH)</strong></td>
+                <td class="fee-highlight">Php4,500</td>
+                <td>Php6,500</td>
+              </tr>
+              <tr data-fee="prof_ph">
+                <td><strong>Professional (PH)</strong></td>
+                <td class="fee-highlight">Php5,000</td>
+                <td>Php7,000</td>
+              </tr>
+              <tr data-fee="nonpaper_ph">
+                <td><strong>Non-Paper Presenter (PH)</strong></td>
+                <td class="fee-highlight">Php7,000</td>
+                <td>Php9,000</td>
+              </tr>
+              <tr data-fee="student_foreign">
+                <td><strong>Student (Foreign)</strong></td>
+                <td class="fee-highlight">USD125</td>
+                <td>USD175</td>
+              </tr>
+              <tr data-fee="prof_foreign">
+                <td><strong>Professional (Foreign)</strong></td>
+                <td class="fee-highlight">USD150</td>
+                <td>USD200</td>
+              </tr>
+              <tr data-fee="nonpaper_foreign">
+                <td><strong>Non-Paper Presenter (Foreign)</strong></td>
+                <td class="fee-highlight">USD175</td>
+                <td>USD215</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="info-box" style="margin-top:20px;">
+          <div class="info-box-title"><i class="fas fa-circle-check"></i> What's Included</div>
+          Registration fee covers the participant's certificate, conference kit, breakfasts, lunches, afternoon snacks, and networking dinner. It does not cover accommodation, travel expenses, or the gastronomic heritage tour.
+        </div>
+
+        <div class="info-box info-box-gold" style="margin-top:16px;">
+          <div class="info-box-title"><i class="fas fa-circle-info"></i> Payment Process</div>
+          Registration procedures — including payment instructions — will be included with the abstract acceptance notification, should your submission be accepted by the Organizing Committee.
+        </div>
+      </div>
+
+      <div id="reg-alert-area" class="form-alert" style="display:none;"></div>
+
+      <div class="form-wrapper reveal">
+        <form id="registrationForm" novalidate>
+
+          <h3 class="form-section-title"><i class="fas fa-user"></i> Personal Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fullName">Full Name <span class="required">*</span></label>
+              <input type="text" id="fullName" name="fullName" class="form-control" placeholder="As it should appear on your badge" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="institution">Institution / Organization <span class="required">*</span></label>
+              <input type="text" id="institution" name="institution" class="form-control" placeholder="e.g. De La Salle Lipa" required>
+            </div>
+            <div class="form-group">
+              <label for="country">Country <span class="required">*</span></label>
+              <input type="text" id="country" name="country" class="form-control" placeholder="e.g. Philippines" required>
+            </div>
+          </div>
+
+          <h3 class="form-section-title"><i class="fas fa-tag"></i> Registration Type</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="regType">Registration Category</label>
+              <select id="regType" name="regType" class="form-control">
+                <option value="" disabled selected>Select your registration type…</option>
+                <option value="ug_ph">Undergraduate Student (PH)</option>
+                <option value="grad_ph">Graduate Student (PH)</option>
+                <option value="prof_ph">Professional (PH)</option>
+                <option value="nonpaper_ph">Non-Paper Presenter (PH)</option>
+                <option value="student_foreign">Student (Foreign)</option>
+                <option value="prof_foreign">Professional (Foreign)</option>
+                <option value="nonpaper_foreign">Non-Paper Presenter (Foreign)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Selected Fee</label>
+              <div style="padding:12px 14px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-weight:700;color:var(--g800);font-size:var(--text-base);" id="selectedFee">
+                — Select a type above —
+              </div>
+            </div>
+          </div>
+
+          <h3 class="form-section-title"><i class="fas fa-ellipsis"></i> Additional Information</h3>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="specialRequests">Special Requests / Dietary Requirements</label>
+              <textarea id="specialRequests" name="specialRequests" class="form-control" rows="3"
+                placeholder="e.g. vegetarian meal, wheelchair access, nursing room, etc."></textarea>
+              <div class="form-help">Optional. We will accommodate requests as best as possible.</div>
+            </div>
+          </div>
+
+          <div class="form-submit-row">
+            <a href="abstract-submission.html" class="btn btn-outline-green">
+              <i class="fas fa-file-alt"></i> Submit Abstract
+            </a>
+            <button type="submit" class="btn btn-green btn-lg">
+              <i class="fas fa-user-plus"></i> Submit Registration
+            </button>
+          </div>
+
+          <p style="text-align:right;font-size:var(--text-xs);color:var(--gray-400);margin-top:12px;">
+            Full registration and payment instructions will be sent together with your abstract acceptance notification.
+          </p>
+        </form>
+      </div>
+
+      <div class="reveal" style="margin-top:32px;">
+        <h3 style="color:var(--g900);margin-bottom:12px;">Deadlines</h3>
+        <ul style="font-size:var(--text-sm);color:var(--gray-600);padding-left:16px;line-height:2;">
+          <li>Abstract Submission: Open until October 15, 2026</li>
+          <li>Regular Registration: November 15, 2026</li>
+          <li>Late Registration: December 5, 2026</li>
+        </ul>
+        <p style="color:var(--gray-500);font-size:var(--text-sm);">For inquiries, email us at <a href="mailto:ich2p.dlsl@gmail.com" style="color:var(--g800);font-weight:600;">ich2p.dlsl@gmail.com</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <img src="assets/logo-dlsl.png" alt="DLSL" class="footer-logo">
+        <p>17th ICH2P 2026 — International Conference on Hydrogen Production, hosted at De La Salle Lipa, Lipa City, Batangas, Philippines.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="about.html">About ICH2P</a></li>
+          <li><a href="committees.html">Committee</a></li>
+          <li><a href="topics.html">Topics</a></li>
+          <li><a href="registration.html">Registration</a></li>
+          <li><a href="abstract-submission.html">Submit Abstract</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Important Dates</h5>
+        <ul>
+          <li>Abstract: Open until Oct 15, 2026</li>
+          <li>Regular Reg: Nov 15, 2026</li>
+          <li>Late Reg: Dec 5, 2026</li>
+          <li>Conference: Dec 17–19, 2026</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <div class="footer-contact-item"><i class="fas fa-envelope"></i><span>ich2p.dlsl@gmail.com</span></div>
+        <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Learning Resource Center, De La Salle Lipa, Lipa City, Batangas, Philippines</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <p>&copy; 2026 De La Salle Lipa · 17th ICH2P. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+
+</body>
+</html>

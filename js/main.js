@@ -241,10 +241,10 @@ function initFeeCalculator() {
   if (!regTypeSelect || !feeDisplay) return;
 
   const fees = {
-    'ug_ph':             'Php4,000 (Regular) / Php6,000 (Late) — Undergraduate Student (PH)',
-    'grad_ph':           'Php4,500 (Regular) / Php6,500 (Late) — Graduate Student (PH)',
-    'prof_ph':           'Php5,000 (Regular) / Php7,000 (Late) — Professional (PH)',
-    'nonpaper_ph':       'Php7,000 (Regular) / Php9,000 (Late) — Non-Paper Presenter (PH)',
+    'ug_ph':             'Php6,000 (Regular) / Php6,500 (Late) — Undergraduate Student (PH)',
+    'grad_ph':           'Php7,500 (Regular) / Php8,000 (Late) — Graduate Student (PH)',
+    'prof_ph':           'Php8,000 (Regular) / Php9,000 (Late) — Professional (PH)',
+    'nonpaper_ph':       'Php9,000 (Regular) / Php9,500 (Late) — Non-Paper Presenter (PH)',
     'student_foreign':   'USD125 (Regular) / USD175 (Late) — Student (Foreign)',
     'prof_foreign':      'USD150 (Regular) / USD200 (Late) — Professional (Foreign)',
     'nonpaper_foreign':  'USD175 (Regular) / USD215 (Late) — Non-Paper Presenter (Foreign)',

@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initFeeCalculator();
   }
 
+  /* Checkout page */
+  if (document.getElementById('checkoutMain')) {
+    initCheckoutPage();
+  }
+
   /* News / announcements page */
   if (document.getElementById('newsGrid')) {
     loadAnnouncements();
@@ -325,9 +330,19 @@ async function submitRegistration(e) {
     });
     const result = await resp.json();
     if (result.status === 'ok') {
+      sessionStorage.setItem('ich2p_pending_reg', JSON.stringify({
+        regId:     result.regId,
+        fullName:  result.fullName,
+        email:     result.email,
+        regType:   result.regType,
+        amountDue: result.amountDue,
+        currency:  result.currency,
+        tier:      result.tier,
+        bdoLink:   result.bdoLink,
+      }));
       form.reset();
-      showAlert('reg-alert-area', 'success',
-        'Registration recorded! Full registration and payment instructions will be sent to ' + data.email + ' together with your abstract acceptance notification.');
+      window.location.href = 'checkout.html';
+      return;
     } else {
       throw new Error(result.message || 'Submission failed.');
     }
@@ -336,6 +351,141 @@ async function submitRegistration(e) {
   } finally {
     setLoading(btn, false);
   }
+}
+
+/* --- Checkout page --- */
+const REG_TYPE_LABELS = {
+  ug_ph:            'Undergraduate Student (PH)',
+  grad_ph:          'Graduate Student (PH)',
+  prof_ph:          'Professional (PH)',
+  nonpaper_ph:      'Non-Paper Presenter (PH)',
+  student_foreign:  'Student (Foreign)',
+  prof_foreign:     'Professional (Foreign)',
+  nonpaper_foreign: 'Non-Paper Presenter (Foreign)',
+};
+
+function initCheckoutPage() {
+  const raw = sessionStorage.getItem('ich2p_pending_reg');
+  const empty = document.getElementById('checkoutEmpty');
+  const main  = document.getElementById('checkoutMain');
+  if (!raw) {
+    empty.style.display = 'block';
+    return;
+  }
+
+  let reg;
+  try {
+    reg = JSON.parse(raw);
+  } catch {
+    empty.style.display = 'block';
+    return;
+  }
+  if (!reg || !reg.regId) {
+    empty.style.display = 'block';
+    return;
+  }
+
+  main.style.display = 'block';
+
+  const amountLabel = formatMoney(reg.amountDue, reg.currency);
+  document.getElementById('sumRegId').textContent = reg.regId;
+  document.getElementById('sumRegIdInline').textContent = reg.regId;
+  document.getElementById('sumName').textContent = reg.fullName || '—';
+  document.getElementById('sumRegType').textContent = REG_TYPE_LABELS[reg.regType] || reg.regType || '—';
+  document.getElementById('sumTier').textContent = reg.tier === 'late' ? 'Late Registration' : 'Regular Registration';
+  document.getElementById('sumAmount').textContent = amountLabel;
+
+  const payBtn = document.getElementById('bdoPayBtn');
+  if (payBtn) payBtn.href = reg.bdoLink || '#';
+
+  /* File upload zone */
+  const dropZone  = document.getElementById('proofDropZone');
+  const fileInput = document.getElementById('proofFile');
+  const fileLabel = document.getElementById('proofFileName');
+  if (dropZone && fileInput) {
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      fileLabel.textContent = file ? file.name : '';
+    });
+  }
+
+  const paymentForm = document.getElementById('paymentForm');
+  if (paymentForm) {
+    paymentForm.addEventListener('submit', (e) => submitPayment(e, reg));
+  }
+}
+
+function formatMoney(amount, currency) {
+  const symbol = currency === 'USD' ? 'USD ' : 'Php';
+  return symbol + Number(amount).toLocaleString('en-US');
+}
+
+async function submitPayment(e, reg) {
+  e.preventDefault();
+  const form = e.target;
+  const refInput = document.getElementById('bdoReferenceNo');
+
+  if (!refInput.value.trim()) {
+    refInput.style.borderColor = '#DC2626';
+    refInput.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.1)';
+    showAlert('checkout-alert-area', 'error', 'Please enter your BDO reference / transaction number.');
+    return;
+  }
+  refInput.style.borderColor = '';
+  refInput.style.boxShadow = '';
+
+  const btn = form.querySelector('[type="submit"]');
+  setLoading(btn, true);
+
+  const data = {
+    form_type:      'payment',
+    token:          'DLSL_ICH2P_2026',
+    regId:          reg.regId,
+    email:          reg.email,
+    bdoReferenceNo: refInput.value.trim(),
+    notes:          document.getElementById('paymentNotes').value.trim(),
+  };
+
+  try {
+    const fileInput = document.getElementById('proofFile');
+    const file = fileInput && fileInput.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Proof of payment file exceeds 5MB. Please upload a smaller file.');
+      }
+      data.proofBase64   = await readFileAsBase64(file);
+      data.proofFileName = file.name;
+      data.proofMimeType  = file.type;
+    }
+
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await resp.json();
+    if (result.status === 'ok') {
+      sessionStorage.removeItem('ich2p_pending_reg');
+      document.getElementById('checkoutMain').style.display = 'none';
+      document.getElementById('checkoutDone').style.display = 'block';
+      document.getElementById('checkoutDone').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      throw new Error(result.message || 'Submission failed.');
+    }
+  } catch (err) {
+    showAlert('checkout-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(btn, false);
+  }
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = () => reject(new Error('Could not read the selected file.'));
+    reader.readAsDataURL(file);
+  });
 }
 
 /* --- News page: fetch from Apps Script --- */

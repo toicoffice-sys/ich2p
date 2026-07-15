@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Complete your BDO payment for 17th ICH2P 2026 registration.">
+  <title>Checkout — 17th ICH2P 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;">
+        <img src="assets/logo-dlsl.png" alt="De La Salle Lipa" class="logo-dlsl">
+        <span class="brand-divider"></span>
+        <img src="assets/logo-ich2p.svg" alt="ICH2P 2026" class="logo-icmet">
+      </a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li class="dropdown">
+        <a href="#">Conference <i class="fas fa-chevron-down" style="font-size:10px;"></i></a>
+        <ul class="dropdown-menu">
+          <li><a href="committees.html">Committee</a></li>
+          <li><a href="topics.html">Topics</a></li>
+          <li><a href="speakers.html">Speakers</a></li>
+          <li><a href="programme.html">Programme</a></li>
+        </ul>
+      </li>
+      <li><a href="venue.html">Venue</a></li>
+      <li><a href="news.html">News</a></li>
+      <li><a href="abstract-submission.html" class="nav-cta-secondary">Submit Abstract</a></li>
+      <li><a href="registration.html" class="nav-cta-primary">Register</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container page-header-content">
+    <div class="page-breadcrumb">
+      <a href="index.html">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="registration.html">Registration</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Checkout</span>
+    </div>
+    <h1>Complete Your Payment</h1>
+    <p class="lead">Pay via BDO, then submit your reference number so our team can verify and confirm your slot.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div style="max-width:760px;margin:0 auto;">
+
+      <div id="checkout-alert-area" class="form-alert" style="display:none;"></div>
+
+      <!-- Shown only if no pending registration is found in this browser session -->
+      <div id="checkoutEmpty" class="reveal" style="display:none;">
+        <div class="info-box info-box-gold">
+          <div class="info-box-title"><i class="fas fa-circle-info"></i> No Pending Registration Found</div>
+          We couldn't find a registration to check out in this browser session. If you already registered, use the link in your confirmation email, or check your reference number with us at
+          <a href="mailto:ich2p.dlsl@gmail.com">ich2p.dlsl@gmail.com</a>.
+        </div>
+        <div style="text-align:center;margin-top:24px;">
+          <a href="registration.html" class="btn btn-green btn-lg"><i class="fas fa-user-plus"></i> Go to Registration</a>
+        </div>
+      </div>
+
+      <!-- Main checkout flow -->
+      <div id="checkoutMain" style="display:none;">
+
+        <!-- Order summary -->
+        <div class="form-wrapper reveal" style="margin-bottom:28px;">
+          <h3 class="form-section-title" style="margin-top:0;"><i class="fas fa-receipt"></i> Order Summary</h3>
+          <table class="fee-table" style="margin-bottom:0;">
+            <tbody>
+              <tr><td><strong>Reference No.</strong></td><td id="sumRegId">—</td></tr>
+              <tr><td><strong>Name</strong></td><td id="sumName">—</td></tr>
+              <tr><td><strong>Registration Type</strong></td><td id="sumRegType">—</td></tr>
+              <tr><td><strong>Rate Applied</strong></td><td id="sumTier">—</td></tr>
+              <tr><td><strong>Amount Due</strong></td><td class="fee-highlight" id="sumAmount" style="font-size:var(--text-lg);">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Step 1: Pay via BDO -->
+        <div class="form-wrapper reveal" style="margin-bottom:28px;">
+          <h3 class="form-section-title" style="margin-top:0;"><span class="step-num">1</span> Pay via BDO</h3>
+          <div class="info-box" style="margin-bottom:20px;">
+            <div class="info-box-title"><i class="fas fa-circle-exclamation"></i> Before You Pay</div>
+            Enter the <strong>exact amount</strong> shown above, and put your <strong>Reference No.</strong> (<span id="sumRegIdInline">—</span>) in the payment description / notes field on the BDO page. This lets us match your payment quickly.
+          </div>
+          <div style="text-align:center;">
+            <a id="bdoPayBtn" href="#" target="_blank" rel="noopener" class="btn btn-green btn-lg">
+              <i class="fas fa-building-columns"></i> Pay via BDO Checkout
+            </a>
+            <p style="margin-top:12px;font-size:var(--text-xs);color:var(--gray-400);">Opens the BDO Link.Biz.Ph secure payment page in a new tab.</p>
+          </div>
+        </div>
+
+        <!-- Step 2: Submit reference number -->
+        <div class="form-wrapper reveal">
+          <h3 class="form-section-title" style="margin-top:0;"><span class="step-num">2</span> Submit Your Payment Reference</h3>
+          <form id="paymentForm" novalidate>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="bdoReferenceNo">BDO Reference / Transaction No. <span class="required">*</span></label>
+                <input type="text" id="bdoReferenceNo" name="bdoReferenceNo" class="form-control" placeholder="e.g. the confirmation / trace number from BDO" required>
+              </div>
+            </div>
+
+            <div class="form-row full">
+              <div class="form-group">
+                <label>Proof of Payment (optional)</label>
+                <div class="file-upload-zone" id="proofDropZone">
+                  <i class="fas fa-cloud-arrow-up"></i>
+                  <p>Click to upload a screenshot or receipt</p>
+                  <p class="file-hint">JPG, PNG, or PDF — max 5MB</p>
+                  <div class="file-selected-name" id="proofFileName"></div>
+                </div>
+                <input type="file" id="proofFile" accept="image/png,image/jpeg,application/pdf">
+              </div>
+            </div>
+
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="paymentNotes">Notes (optional)</label>
+                <textarea id="paymentNotes" name="paymentNotes" class="form-control" rows="2" placeholder="Anything else the organizers should know about this payment"></textarea>
+              </div>
+            </div>
+
+            <div class="form-submit-row">
+              <button type="submit" class="btn btn-green btn-lg">
+                <i class="fas fa-paper-plane"></i> Submit for Verification
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Shown after successful submission -->
+      <div id="checkoutDone" class="reveal" style="display:none;">
+        <div class="info-box">
+          <div class="info-box-title"><i class="fas fa-circle-check"></i> Payment Reference Submitted</div>
+          Thank you! Our team will verify your payment against BDO records and email you a confirmation, usually within 1–2 business days.
+        </div>
+        <div style="text-align:center;margin-top:24px;">
+          <a href="index.html" class="btn btn-outline-green btn-lg"><i class="fas fa-house"></i> Back to Home</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <img src="assets/logo-dlsl.png" alt="DLSL" class="footer-logo">
+        <p>17th ICH2P 2026 — International Conference on Hydrogen Production, hosted at De La Salle Lipa, Lipa City, Batangas, Philippines.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="about.html">About ICH2P</a></li>
+          <li><a href="committees.html">Committee</a></li>
+          <li><a href="topics.html">Topics</a></li>
+          <li><a href="registration.html">Registration</a></li>
+          <li><a href="abstract-submission.html">Submit Abstract</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Important Dates</h5>
+        <ul>
+          <li>Abstract: Open until Oct 15, 2026</li>
+          <li>Regular Reg: Nov 15, 2026</li>
+          <li>Late Reg: Dec 5, 2026</li>
+          <li>Conference: Dec 17–19, 2026</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <div class="footer-contact-item"><i class="fas fa-envelope"></i><span>ich2p.dlsl@gmail.com</span></div>
+        <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Learning Resource Center, De La Salle Lipa, Lipa City, Batangas, Philippines</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <p>&copy; 2026 De La Salle Lipa · 17th ICH2P. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+
+</body>
+</html>

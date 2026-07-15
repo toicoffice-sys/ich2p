@@ -4,11 +4,15 @@
  * Announcements GET endpoint.
  *
  * Setup:
- *  1. Create a Google Sheet with tabs: Abstracts, Registrations, Speakers, Announcements
+ *  1. Create a Google Sheet with tabs: Abstracts, Registrations, Payments, Speakers, Announcements
+ *     (or just run setupSheets() once from the Apps Script editor to create them all).
  *  2. Open Extensions > Apps Script, paste this code.
  *  3. Replace SPREADSHEET_ID below.
- *  4. Deploy as Web App: Execute As = Me, Who has access = Anyone
- *  5. Copy deployment URL into js/main.js  APPS_SCRIPT_URL constant.
+ *  4. Replace CONFIG.BDO_LINKS with the real BDO Link.Biz.Ph flexible-amount payment links.
+ *  5. Deploy as Web App: Execute As = Me, Who has access = Anyone
+ *  6. Copy deployment URL into js/main.js  APPS_SCRIPT_URL constant.
+ *  7. See admin-dashboard/ for the separate, Google-Sign-In-gated payment
+ *     tracking dashboard for organizers (deployed as its own Apps Script project).
  */
 
 // ============================================================
@@ -19,6 +23,31 @@ var CONFIG = {
   SECRET_TOKEN:    'DLSL_ICH2P_2026',           // must match token in main.js
   COMMITTEE_EMAIL: 'ich2p.dlsl@gmail.com',
   FROM_NAME:       '17th ICH2P 2026 — De La Salle Lipa',
+
+  // Registration fee schedule — keep in sync with registration.html's fee table
+  FEES: {
+    ug_ph:            { regular: 6000, late: 6500, currency: 'PHP' },
+    grad_ph:          { regular: 7500, late: 8000, currency: 'PHP' },
+    prof_ph:          { regular: 8000, late: 9000, currency: 'PHP' },
+    nonpaper_ph:      { regular: 9000, late: 9500, currency: 'PHP' },
+    student_foreign:  { regular: 125,  late: 175,  currency: 'USD' },
+    prof_foreign:     { regular: 150,  late: 200,  currency: 'USD' },
+    nonpaper_foreign: { regular: 175,  late: 215,  currency: 'USD' },
+  },
+  REGULAR_DEADLINE: '2026-11-15T23:59:59+08:00',
+  LATE_DEADLINE:    '2026-12-05T23:59:59+08:00',
+
+  // BDO Link.Biz.Ph flexible-amount payment links — REPLACE with the actual
+  // links generated from the BDO Link.Biz.Ph merchant portal before going live.
+  BDO_LINKS: {
+    PHP: 'https://www.linkbiz.ph/REPLACE_WITH_PHP_PAYMENT_LINK',
+    USD: 'https://www.linkbiz.ph/REPLACE_WITH_USD_PAYMENT_LINK',
+  },
+
+  // Folder (in the Drive of the account this script runs as) where proof-of-payment
+  // uploads are stored. Left blank — a folder is created on first upload and the
+  // ID is cached in Script Properties under PROOF_FOLDER_ID.
+  PROOF_MAX_BYTES: 5 * 1024 * 1024, // 5MB
 };
 
 // ============================================================
@@ -66,6 +95,9 @@ function doPost(e) {
         break;
       case 'registration':
         result = handleRegistration(data);
+        break;
+      case 'payment':
+        result = handlePayment(data);
         break;
       default:
         result = { status: 'error', message: 'Unknown form type.' };
@@ -145,7 +177,8 @@ function handleAbstract(data) {
 }
 
 /**
- * Registration — writes to Registrations sheet, acknowledges receipt.
+ * Registration — writes to Registrations sheet, acknowledges receipt,
+ * and returns the amount due so the client can proceed to checkout.html.
  */
 function handleRegistration(data) {
   var sheet = getSheet('Registrations');
@@ -157,27 +190,38 @@ function handleRegistration(data) {
     }
   }
 
-  var ts = new Date();
+  var feeInfo = getFeeForRegType(data.regType);
+  if (!feeInfo) {
+    return { status: 'error', message: 'Unknown registration type.' };
+  }
+
+  var ts    = new Date();
+  var regId = generateRegId();
+
   sheet.appendRow([
     ts,
+    regId,
     data.fullName.trim(),
     data.institution.trim(),
     data.country.trim(),
     data.email.trim().toLowerCase(),
     data.regType,
     data.specialRequests ? data.specialRequests.trim() : '',
-    'Pending',
+    feeInfo.amount,
+    feeInfo.currency,
+    'Pending Payment',
   ]);
 
   // Acknowledgement email
   sendEmail(
     data.email,
-    '17th ICH2P 2026 — Registration Received',
+    '17th ICH2P 2026 — Registration Received (Ref: ' + regId + ')',
     emailTemplate('Registration Received', [
       'Dear ' + data.fullName + ',',
-      'Thank you for registering your interest in the 17th ICH2P 2026, hosted by De La Salle Lipa, December 17–19, 2026.',
-      'Your registration has been recorded. Full registration procedures — including payment instructions — will be sent together with your abstract acceptance notification.',
-      '<strong>Regular Registration deadline:</strong> November 15, 2026<br><strong>Late Registration deadline:</strong> December 5, 2026',
+      'Thank you for registering for the 17th ICH2P 2026, hosted by De La Salle Lipa, December 17–19, 2026.',
+      '<strong>Reference No:</strong> ' + regId,
+      '<strong>Amount Due:</strong> ' + formatMoney(feeInfo.amount, feeInfo.currency) + ' (' + feeInfo.tier + ' rate)',
+      'Please complete payment via the BDO checkout link shown on the confirmation page, then submit your BDO reference number so our team can verify and confirm your slot.',
       'For questions, contact us at ich2p.dlsl@gmail.com.',
     ])
   );
@@ -187,16 +231,104 @@ function handleRegistration(data) {
     CONFIG.COMMITTEE_EMAIL,
     '[ICH2P 2026] New Registration: ' + data.fullName,
     emailTemplate('New Registration Submitted', [
+      '<strong>Reference No:</strong> ' + regId,
       '<strong>Name:</strong> ' + data.fullName,
       '<strong>Email:</strong> ' + data.email,
       '<strong>Institution:</strong> ' + data.institution + ', ' + data.country,
       '<strong>Type:</strong> ' + data.regType,
+      '<strong>Amount Due:</strong> ' + formatMoney(feeInfo.amount, feeInfo.currency),
       '<strong>Special Requests:</strong> ' + (data.specialRequests || 'None'),
       'Review in the Registrations sheet.',
     ])
   );
 
-  return { status: 'ok', message: 'Registration received.' };
+  return {
+    status:     'ok',
+    message:    'Registration received.',
+    regId:      regId,
+    fullName:   data.fullName.trim(),
+    email:      data.email.trim().toLowerCase(),
+    regType:    data.regType,
+    amountDue:  feeInfo.amount,
+    currency:   feeInfo.currency,
+    tier:       feeInfo.tier,
+    bdoLink:    CONFIG.BDO_LINKS[feeInfo.currency] || '',
+  };
+}
+
+/**
+ * Payment reference submission — writes to Payments sheet as
+ * "Pending Verification" and flags the matching Registrations row.
+ */
+function handlePayment(data) {
+  var required = ['regId', 'bdoReferenceNo', 'email'];
+  for (var i = 0; i < required.length; i++) {
+    if (!data[required[i]] || !String(data[required[i]]).trim()) {
+      return { status: 'error', message: 'Missing required field: ' + required[i] };
+    }
+  }
+
+  var reg = findRegistrationByRegId(data.regId.trim().toUpperCase());
+  if (!reg) {
+    return { status: 'error', message: 'We could not find a registration with that reference number.' };
+  }
+
+  var proofUrl = '';
+  if (data.proofBase64 && data.proofFileName) {
+    try {
+      proofUrl = saveProofFile(data.proofBase64, data.proofFileName, data.proofMimeType, reg.regId);
+    } catch (err) {
+      return { status: 'error', message: 'Could not save proof of payment: ' + err.message };
+    }
+  }
+
+  var ts = new Date();
+  var paymentsSheet = getSheet('Payments');
+  paymentsSheet.appendRow([
+    ts,
+    reg.regId,
+    reg.fullName,
+    reg.email,
+    reg.regType,
+    reg.amountDue,
+    reg.currency,
+    data.bdoReferenceNo.trim(),
+    proofUrl,
+    'Pending Verification',
+    '',   // Verified By
+    '',   // Verified On
+    data.notes ? data.notes.trim() : '',
+  ]);
+
+  setRegistrationStatus(reg.rowIndex, 'Payment Submitted — Pending Verification');
+
+  sendEmail(
+    reg.email,
+    '17th ICH2P 2026 — Payment Reference Received (Ref: ' + reg.regId + ')',
+    emailTemplate('Payment Reference Received', [
+      'Dear ' + reg.fullName + ',',
+      'We received your BDO payment reference for registration ' + reg.regId + '.',
+      '<strong>BDO Reference No:</strong> ' + data.bdoReferenceNo.trim(),
+      '<strong>Amount:</strong> ' + formatMoney(reg.amountDue, reg.currency),
+      'Our team will verify this against BDO records and send a confirmation email once your payment is verified, usually within 1–2 business days.',
+      'For questions, contact us at ich2p.dlsl@gmail.com.',
+    ])
+  );
+
+  sendEmail(
+    CONFIG.COMMITTEE_EMAIL,
+    '[ICH2P 2026] Payment Submitted: ' + reg.fullName + ' (' + reg.regId + ')',
+    emailTemplate('Payment Reference Submitted', [
+      '<strong>Reference No:</strong> ' + reg.regId,
+      '<strong>Name:</strong> ' + reg.fullName + ' (' + reg.email + ')',
+      '<strong>Amount Due:</strong> ' + formatMoney(reg.amountDue, reg.currency),
+      '<strong>BDO Reference No:</strong> ' + data.bdoReferenceNo.trim(),
+      proofUrl ? '<strong>Proof of Payment:</strong> <a href="' + proofUrl + '">' + proofUrl + '</a>' : '<strong>Proof of Payment:</strong> Not attached',
+      'Verify against the BDO merchant dashboard and update the Payments sheet, or use the admin dashboard.',
+    ])
+  );
+
+  return { status: 'ok', message: 'Payment reference submitted for verification.' };
 }
 
 // ============================================================
@@ -231,6 +363,102 @@ function getSheet(name) {
   var sheet = ss.getSheetByName(name);
   if (!sheet) throw new Error('Sheet "' + name + '" not found. Please create it in the spreadsheet.');
   return sheet;
+}
+
+/**
+ * Looks up the fee for a registration type based on today's date vs.
+ * the regular/late deadlines in CONFIG.
+ */
+function getFeeForRegType(regType) {
+  var fee = CONFIG.FEES[regType];
+  if (!fee) return null;
+
+  var now = new Date();
+  var regularDeadline = new Date(CONFIG.REGULAR_DEADLINE);
+  var tier = now <= regularDeadline ? 'regular' : 'late';
+
+  return {
+    amount:   fee[tier],
+    currency: fee.currency,
+    tier:     tier,
+  };
+}
+
+/**
+ * Short, unguessable registration reference (e.g. "ICH2P-7K3QF9").
+ */
+function generateRegId() {
+  var code = Utilities.getUuid().replace(/-/g, '').substring(0, 6).toUpperCase();
+  return 'ICH2P-' + code;
+}
+
+function formatMoney(amount, currency) {
+  var symbol = currency === 'USD' ? 'USD' : 'Php';
+  return symbol + Number(amount).toLocaleString('en-US');
+}
+
+/**
+ * Finds a registration row by RegID (column B). Returns null if not found.
+ */
+function findRegistrationByRegId(regId) {
+  var sheet = getSheet('Registrations');
+  var values = sheet.getDataRange().getValues();
+
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][1]).trim().toUpperCase() === regId) {
+      return {
+        rowIndex:  i + 1, // 1-based sheet row
+        regId:     values[i][1],
+        fullName:  values[i][2],
+        email:     values[i][5],
+        regType:   values[i][6],
+        amountDue: values[i][8],
+        currency:  values[i][9],
+      };
+    }
+  }
+  return null;
+}
+
+function setRegistrationStatus(rowIndex, status) {
+  var sheet = getSheet('Registrations');
+  sheet.getRange(rowIndex, 11).setValue(status); // Status is column K
+}
+
+/**
+ * Saves a base64-encoded proof-of-payment file to Drive and returns its URL.
+ * Files are stored in a dedicated folder, created on first use and cached
+ * in Script Properties so re-runs reuse the same folder.
+ */
+function saveProofFile(base64Data, fileName, mimeType, regId) {
+  var sizeBytes = Math.ceil((base64Data.length * 3) / 4);
+  if (sizeBytes > CONFIG.PROOF_MAX_BYTES) {
+    throw new Error('File exceeds the 5MB limit.');
+  }
+
+  var props = PropertiesService.getScriptProperties();
+  var folderId = props.getProperty('PROOF_FOLDER_ID');
+  var folder;
+  if (folderId) {
+    try {
+      folder = DriveApp.getFolderById(folderId);
+    } catch (e) {
+      folder = null;
+    }
+  }
+  if (!folder) {
+    folder = DriveApp.createFolder('ICH2P 2026 — Proof of Payment');
+    props.setProperty('PROOF_FOLDER_ID', folder.getId());
+  }
+
+  var blob = Utilities.newBlob(
+    Utilities.base64Decode(base64Data),
+    mimeType || 'application/octet-stream',
+    regId + '_' + fileName
+  );
+  var file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return file.getUrl();
 }
 
 function sendEmail(to, subject, htmlBody) {
@@ -310,8 +538,13 @@ function setupSheets() {
       'Presentation Type', 'Title', 'Abstract Text', 'Status'
     ],
     'Registrations': [
-      'Timestamp', 'Full Name', 'Institution', 'Country', 'Email',
-      'Registration Type', 'Special Requests', 'Status'
+      'Timestamp', 'RegID', 'Full Name', 'Institution', 'Country', 'Email',
+      'Registration Type', 'Special Requests', 'Amount Due', 'Currency', 'Status'
+    ],
+    'Payments': [
+      'Timestamp', 'RegID', 'Full Name', 'Email', 'Registration Type',
+      'Amount Due', 'Currency', 'BDO Reference No', 'Proof URL', 'Status',
+      'Verified By', 'Verified On', 'Notes'
     ],
     'Speakers': [
       'Name', 'Institution', 'Country', 'Bio', 'Photo URL', 'Status'

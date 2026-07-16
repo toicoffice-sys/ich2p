@@ -1,0 +1,8 @@
+# Backend Apps Script source — never belongs in the publicly-deployed web root.
+# This repo is pulled directly onto the ich2p.dlsl.edu.ph server; anything tracked
+# here becomes browsable. Apps Script source is managed separately via clasp,
+# not deployed through this repo.
+apps-script/
+admin-dashboard/
+
+.DS_Store

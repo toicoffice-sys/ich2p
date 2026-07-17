@@ -270,6 +270,21 @@ p:last-child { margin-bottom: 0; }
 .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ============================================================
+   PUBMAT BANNER
+   ============================================================ */
+.pubmat-banner {
+  aspect-ratio: 3 / 1;
+  max-height: 340px;
+  background-color: var(--gray-100);
+  background-image: url('../assets/banner-ich2p-2026.jpg');
+  background-size: cover;
+  background-position: center;
+}
+@media (max-width: 640px) {
+  .pubmat-banner { aspect-ratio: 16 / 9; max-height: 220px; }
+}
+
+/* ============================================================
    HERO
    ============================================================ */
 .hero {
@@ -813,7 +828,7 @@ select.form-control { cursor: pointer; }
 .file-upload-zone p { font-size: var(--text-sm); color: var(--gray-500); margin: 0; }
 .file-upload-zone .file-hint { font-size: var(--text-xs); color: var(--gray-400); margin-top: 4px; }
 .file-selected-name { font-size: var(--text-sm); color: var(--g800); font-weight: 500; margin-top: 8px; }
-#fileInput { display: none; }
+.file-input-hidden { display: none; }
 
 /* Fee table */
 .fee-table {

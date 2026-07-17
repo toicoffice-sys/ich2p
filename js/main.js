@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (abstractForm) {
     abstractForm.addEventListener('submit', submitAbstract);
     initCharCount();
+    initFileDropZone('abstractPdfDropZone', 'abstractPdfFile', 'abstractPdfFileName');
   }
 
   /* Registration form */
@@ -39,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydq2z9T8w1cFaqKpq8cnlrw1Is18EnafkT_SMgMCA0mglM7nXKtPcbRRGyLUho_kPG/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRkw0T0gNuD8JKpngWl3gVnAP7Z_9Jpo4Js_OxibEZCTER4C5dnl0dHZj18TDjGxUGJQ/exec';
 
 /* --- Navbar scroll + mobile toggle --- */
 (function initNav() {
@@ -224,6 +225,20 @@ function validateForm(form) {
   return valid;
 }
 
+/* --- Reusable click-to-upload drop zone --- */
+function initFileDropZone(dropZoneId, fileInputId, labelId) {
+  const dropZone  = document.getElementById(dropZoneId);
+  const fileInput = document.getElementById(fileInputId);
+  const fileLabel = document.getElementById(labelId);
+  if (!dropZone || !fileInput) return;
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    fileLabel.textContent = file ? file.name : '';
+  });
+}
+
 /* --- Abstract character count --- */
 function initCharCount() {
   const textarea = document.getElementById('abstractText');
@@ -266,10 +281,28 @@ function initFeeCalculator() {
 }
 
 /* --- Abstract submission form --- */
+const ABSTRACT_PDF_MAX_BYTES = 10 * 1024 * 1024; // 10MB
+
 async function submitAbstract(e) {
   e.preventDefault();
   const form = e.target;
   if (!validateForm(form)) return;
+
+  const pdfInput = document.getElementById('abstractPdfFile');
+  const pdfFile = pdfInput && pdfInput.files[0];
+  if (!pdfFile) {
+    showAlert('form-alert-area', 'error', 'Please attach your abstract as a PDF file.');
+    return;
+  }
+  if (pdfFile.type !== 'application/pdf') {
+    showAlert('form-alert-area', 'error', 'The attached file must be a PDF.');
+    return;
+  }
+  if (pdfFile.size > ABSTRACT_PDF_MAX_BYTES) {
+    showAlert('form-alert-area', 'error', 'The PDF exceeds the 10MB limit. Please upload a smaller file.');
+    return;
+  }
+
   const btn = form.querySelector('[type="submit"]');
   setLoading(btn, true);
 
@@ -285,6 +318,10 @@ async function submitAbstract(e) {
   };
 
   try {
+    data.pdfBase64    = await readFileAsBase64(pdfFile);
+    data.pdfFileName  = pdfFile.name;
+    data.pdfMimeType  = pdfFile.type;
+
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -292,6 +329,8 @@ async function submitAbstract(e) {
     const result = await resp.json();
     if (result.status === 'ok') {
       form.reset();
+      const pdfLabel = document.getElementById('abstractPdfFileName');
+      if (pdfLabel) pdfLabel.textContent = '';
       showAlert('form-alert-area', 'success',
         'Your abstract has been submitted successfully! A confirmation email has been sent to ' + data.email);
     } else {
@@ -398,17 +437,7 @@ function initCheckoutPage() {
   const payBtn = document.getElementById('bdoPayBtn');
   if (payBtn) payBtn.href = reg.bdoLink || '#';
 
-  /* File upload zone */
-  const dropZone  = document.getElementById('proofDropZone');
-  const fileInput = document.getElementById('proofFile');
-  const fileLabel = document.getElementById('proofFileName');
-  if (dropZone && fileInput) {
-    dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      fileLabel.textContent = file ? file.name : '';
-    });
-  }
+  initFileDropZone('proofDropZone', 'proofFile', 'proofFileName');
 
   const paymentForm = document.getElementById('paymentForm');
   if (paymentForm) {

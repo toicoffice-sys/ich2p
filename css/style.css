@@ -8,14 +8,18 @@
 
 /* --- Design Tokens --- */
 :root {
-  /* Brand Colors */
-  --g900: #1B5E20;
-  --g800: #2E7D32;
-  --g700: #388E3C;
-  --g600: #43A047;
-  --g500: #4CAF50;
-  --g100: #E8F5E9;
-  --g50:  #F1F8E9;
+  /* Brand Colors — rooted on #166938 */
+  --g900: #166938;
+  --g800: #1D7C43;
+  --g700: #248F4E;
+  --g600: #2CA359;
+  --g500: #34B765;
+  --g100: #E3F3E9;
+  --g50:  #F0F9F3;
+  /* Deeper-than-root shades, same hue family, for dark backgrounds (hero, page headers) */
+  --g-deep1: #0F4A27;
+  --g-deep2: #0B3A1F;
+  --g-deep3: #082E18;
   --gold: #1F2937;
   --gold-dark: #000000;
   --gold-light: #6B7280;
@@ -143,6 +147,15 @@ p:last-child { margin-bottom: 0; }
 /* ============================================================
    NAVBAR
    ============================================================ */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--g600), var(--g800));
+  z-index: 1001;
+  transition: width 0.1s linear;
+}
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -297,7 +310,7 @@ p:last-child { margin-bottom: 0; }
    ============================================================ */
 .hero {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--g900) 0%, #0D3A11 40%, #14421A 70%, var(--g800) 100%);
+  background: linear-gradient(135deg, var(--g-deep1) 0%, var(--g-deep3) 40%, var(--g-deep2) 70%, var(--g800) 100%);
   display: flex;
   align-items: center;
   padding-top: var(--nav-h);
@@ -316,8 +329,8 @@ p:last-child { margin-bottom: 0; }
   position: absolute;
   inset: -20% 0 0 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
   background-size: 48px 48px;
   will-change: transform;
 }
@@ -485,7 +498,7 @@ p:last-child { margin-bottom: 0; }
    PAGE HEADER (inner pages)
    ============================================================ */
 .page-header {
-  background: linear-gradient(135deg, var(--g900), #0D3A11);
+  background: linear-gradient(135deg, var(--g900), var(--g-deep2));
   padding: calc(var(--nav-h) + 48px) 0 56px;
   position: relative;
   overflow: hidden;
@@ -537,13 +550,13 @@ p:last-child { margin-bottom: 0; }
   border: 2px solid transparent;
 }
 .btn-primary {
-  background: var(--gold);
+  background: #2d318c;
   color: var(--white);
-  border-color: var(--gold);
+  border-color: #2d318c;
 }
 .btn-primary:hover {
-  background: var(--gold-dark);
-  border-color: var(--gold-dark);
+  background: #21255e;
+  border-color: #21255e;
   box-shadow: var(--shadow-gold);
   transform: translateY(-1px);
 }

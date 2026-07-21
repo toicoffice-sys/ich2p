@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex">
   <meta name="description" content="Complete your BDO payment for 17th ICH2P 2026 registration.">
   <title>Checkout — 17th ICH2P 2026</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
@@ -15,9 +15,9 @@
   <div class="nav-container">
     <div class="nav-brand">
       <a href="index.html" style="display:flex;align-items:center;gap:12px;">
-        <img src="assets/logo-dlsl.png" alt="De La Salle Lipa" class="logo-dlsl">
+        <img src="assets/logo-ich2p-official.png" alt="17th ICH2P 2026" class="logo-dlsl">
         <span class="brand-divider"></span>
-        <img src="assets/logo-ich2p.svg" alt="ICH2P 2026" class="logo-icmet">
+        <span class="nav-brand-text">International Conference on Hydrogen Production</span>
       </a>
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
@@ -51,7 +51,7 @@
       <span>Checkout</span>
     </div>
     <h1>Complete Your Payment</h1>
-    <p class="lead">Pay via BDO, then submit your reference number so our team can verify and confirm your slot.</p>
+    <p class="lead">Pay via BDO. Your slot is usually confirmed automatically — if you don't get a confirmation email shortly after paying, submit your reference number below so our team can verify it by hand.</p>
   </div>
 </div>
 
@@ -105,9 +105,9 @@
           </div>
         </div>
 
-        <!-- Step 2: Submit reference number -->
+        <!-- Step 2: Submit reference number (fallback if automatic verification hasn't come through) -->
         <div class="form-wrapper reveal">
-          <h3 class="form-section-title" style="margin-top:0;"><span class="step-num">2</span> Submit Your Payment Reference</h3>
+          <h3 class="form-section-title" style="margin-top:0;"><span class="step-num">2</span> Didn't get a confirmation email? Submit your reference manually</h3>
           <form id="paymentForm" novalidate>
             <div class="form-row full">
               <div class="form-group">
@@ -200,7 +200,7 @@
     </div>
   </div>
 </footer>
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1"></script>
 
 </body>
 </html>

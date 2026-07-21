@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="17th ICH2P 2026 — International Conference on Hydrogen Production, hosted by De La Salle Lipa, Lipa City, Batangas, Philippines — December 17–19, 2026.">
   <title>17th ICH2P 2026 — International Conference on Hydrogen Production</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
@@ -15,9 +15,9 @@
   <div class="nav-container">
     <div class="nav-brand">
       <a href="index.html" style="display:flex;align-items:center;gap:12px;">
-        <img src="assets/logo-dlsl.png" alt="De La Salle Lipa" class="logo-dlsl">
+        <img src="assets/logo-ich2p-official.png" alt="17th ICH2P 2026" class="logo-dlsl">
         <span class="brand-divider"></span>
-        <img src="assets/logo-ich2p.svg" alt="ICH2P 2026" class="logo-icmet">
+        <span class="nav-brand-text">International Conference on Hydrogen Production</span>
       </a>
     </div>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
@@ -43,17 +43,28 @@
   </div>
 </nav>
 
-<!-- OFFICIAL PUBMAT BANNER -->
-<div style="background:var(--white);padding:20px 0;">
-  <div class="container">
-    <div class="reveal pubmat-banner" role="img" aria-label="17th International Conference on Hydrogen Production — 17–19 December 2026, De La Salle Lipa, Lipa City, Batangas, Philippines" style="max-width:1200px;margin:0 auto;border-radius:var(--r-xl);overflow:hidden;box-shadow:0 12px 32px rgba(15,60,30,0.14);border:1px solid var(--gray-200);"></div>
-  </div>
-</div>
-
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="heroSection">
   <div class="hero-grid"></div>
+  <div class="hero-bubbles" aria-hidden="true">
+    <div class="hero-bubble-wrap" data-speed="0.15" style="top:12%;left:6%;">
+      <div class="hero-bubble" style="width:70px;height:70px;animation-duration:8s;">H₂</div>
+    </div>
+    <div class="hero-bubble-wrap" data-speed="0.35" style="top:65%;left:14%;">
+      <div class="hero-bubble" style="width:44px;height:44px;animation-duration:6s;animation-delay:1s;">O₂</div>
+    </div>
+    <div class="hero-bubble-wrap" data-speed="0.22" style="top:22%;left:88%;">
+      <div class="hero-bubble" style="width:56px;height:56px;animation-duration:10s;animation-delay:0.5s;">H₂O</div>
+    </div>
+    <div class="hero-bubble-wrap" data-speed="0.45" style="top:78%;left:92%;">
+      <div class="hero-bubble" style="width:34px;height:34px;animation-duration:7s;animation-delay:2s;"></div>
+    </div>
+    <div class="hero-bubble-wrap" data-speed="0.1" style="top:45%;left:50%;">
+      <div class="hero-bubble" style="width:26px;height:26px;animation-duration:9s;animation-delay:1.5s;"></div>
+    </div>
+  </div>
   <div class="container">
+    <div class="grid-2" style="align-items:center;gap:48px;">
     <div class="hero-content">
       <div class="hero-badge">
         <i class="fas fa-award"></i> Hosted by De La Salle Lipa
@@ -94,6 +105,10 @@
           Learn More <i class="fas fa-arrow-right" style="font-size:12px;"></i>
         </a>
       </div>
+    </div>
+    <div class="reveal reveal-delay-3" style="position:relative;z-index:2;text-align:center;">
+      <img id="heroPoster" src="assets/poster-ich2p-2026-full.jpg" alt="17th ICH2P 2026 official poster — December 17–19, 2026, De La Salle Lipa, Lipa City, Batangas, Philippines" style="max-width:320px;width:100%;height:auto;border-radius:var(--r-xl);box-shadow:0 20px 50px rgba(0,0,0,0.35);transition:transform 0.2s ease-out;">
+    </div>
     </div>
   </div>
 </section>
@@ -432,10 +447,34 @@
 <div class="partners-strip">
   <div class="container">
     <p class="partners-label">Host Institution</p>
-    <div class="partners-logos">
-      <div class="partner-logo-placeholder">DLSL</div>
-      <div class="partner-logo-placeholder">RMCO</div>
-      <div class="partner-logo-placeholder">ICH2P</div>
+    <div class="partners-logos reveal">
+      <img src="assets/logo-dlsl-seal.png" alt="De La Salle Lipa" class="partner-logo-img">
+      <img src="assets/logo-rmco.png" alt="RMCO" class="partner-logo-img">
+      <img src="assets/logo-ich2p-official.png" alt="ICH2P" class="partner-logo-img">
+    </div>
+  </div>
+</div>
+
+<!-- PARTNER ORGANIZATIONS STRIP -->
+<div class="partners-strip">
+  <div class="container">
+    <p class="partners-label">Partner Organizations</p>
+    <div class="partners-logos reveal">
+      <img src="assets/partner-ontariotech.jpg" alt="Ontario Tech University" class="partner-logo-img">
+      <img src="assets/partner-hidrojen-teknolojileri.png" alt="Hidrojen Teknolojileri Derneği" class="partner-logo-img">
+    </div>
+  </div>
+</div>
+
+<!-- SPONSORS STRIP -->
+<div class="partners-strip">
+  <div class="container">
+    <p class="partners-label">Sponsors</p>
+    <div class="partners-logos reveal">
+      <div class="partner-logo-placeholder">Sponsor 1</div>
+      <div class="partner-logo-placeholder">Sponsor 2</div>
+      <div class="partner-logo-placeholder">Sponsor 3</div>
+      <div class="partner-logo-placeholder">Sponsor 4</div>
     </div>
   </div>
 </div>
@@ -482,6 +521,6 @@
   </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script src="js/main.js?v=1"></script>
 </body>
 </html>

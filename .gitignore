@@ -5,4 +5,8 @@
 apps-script/
 admin-dashboard/
 
+# Raw design source material (drafts, docs, unused assets) — not deployed
+# site content. Only the specific files copied into assets/ are used live.
+images/
+
 .DS_Store

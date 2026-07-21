@@ -172,6 +172,14 @@ p:last-child { margin-bottom: 0; }
   width: 1px; height: 28px; background: var(--gray-300); display: block;
 }
 .nav-brand .logo-icmet { height: 40px; width: auto; }
+.nav-brand .nav-brand-text {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--g900);
+  line-height: 1.3;
+  max-width: 170px;
+}
 
 .nav-links {
   display: flex;
@@ -306,16 +314,68 @@ p:last-child { margin-bottom: 0; }
 }
 .hero-grid {
   position: absolute;
-  inset: 0;
+  inset: -20% 0 0 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px);
   background-size: 48px 48px;
+  will-change: transform;
+}
+.hero-bubbles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-bubble-wrap {
+  position: absolute;
+  will-change: transform;
+}
+.hero-bubble {
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 70%);
+  border: 1px solid rgba(255,255,255,0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.55);
+  animation: bubbleFloat ease-in-out infinite;
+}
+@keyframes bubbleFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(12px, -26px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-bubble { animation: none; }
 }
 .hero-content {
   position: relative;
   z-index: 2;
   max-width: 760px;
+}
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-badge, .hero-title, .hero-subtitle, .hero-meta, .hero-countdown, .hero-actions {
+  opacity: 0;
+  animation: heroFadeUp 0.8s var(--ease) forwards;
+}
+.hero-badge     { animation-delay: 0s; }
+.hero-title     { animation-delay: 0.1s; }
+.hero-subtitle  { animation-delay: 0.2s; }
+.hero-meta      { animation-delay: 0.3s; }
+.hero-countdown { animation-delay: 0.4s; }
+.hero-actions   { animation-delay: 0.5s; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge, .hero-title, .hero-subtitle, .hero-meta, .hero-countdown, .hero-actions {
+    animation: none;
+    opacity: 1;
+  }
 }
 .hero-logos {
   display: flex;
@@ -1037,6 +1097,11 @@ select.form-control { cursor: pointer; }
   font-weight: 700;
   color: var(--gray-500);
   letter-spacing: 1px;
+}
+.partner-logo-img {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
 }
 
 /* ============================================================

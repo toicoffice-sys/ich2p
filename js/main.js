@@ -108,6 +108,48 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRkw0T0gNuD8JK
   els.forEach(el => io.observe(el));
 })();
 
+/* --- Hero parallax (background grid + floating molecule bubbles) --- */
+(function initParallax() {
+  const heroGrid = document.querySelector('.hero .hero-grid');
+  const bubbleWraps = document.querySelectorAll('.hero .hero-bubble-wrap');
+  if (!heroGrid && !bubbleWraps.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      if (heroGrid) heroGrid.style.transform = `translateY(${y * 0.5}px)`;
+      bubbleWraps.forEach(el => {
+        const speed = parseFloat(el.dataset.speed) || 0.2;
+        el.style.transform = `translateY(${y * speed}px)`;
+      });
+      ticking = false;
+    });
+  }, { passive: true });
+})();
+
+/* --- Hero poster mouse-tilt --- */
+(function initHeroTilt() {
+  const hero = document.getElementById('heroSection');
+  const poster = document.getElementById('heroPoster');
+  if (!hero || !poster) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('(hover: none)').matches) return; // skip on touch devices
+
+  hero.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    poster.style.transform = `perspective(900px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg)`;
+  });
+  hero.addEventListener('mouseleave', () => {
+    poster.style.transform = '';
+  });
+})();
+
 /* --- Countdown timer --- */
 function initCountdown(targetDate) {
   const el = document.getElementById('countdown');
@@ -332,7 +374,7 @@ async function submitAbstract(e) {
       const pdfLabel = document.getElementById('abstractPdfFileName');
       if (pdfLabel) pdfLabel.textContent = '';
       showAlert('form-alert-area', 'success',
-        'Your abstract has been submitted successfully! A confirmation email has been sent to ' + data.email);
+        'Your abstract and PDF file (' + data.pdfFileName + ') were uploaded and saved successfully! A confirmation email has been sent to ' + data.email);
     } else {
       throw new Error(result.message || 'Submission failed.');
     }

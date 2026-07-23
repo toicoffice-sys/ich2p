@@ -10,3 +10,9 @@ admin-dashboard/
 images/
 
 .DS_Store
+
+# Claude Code local settings/permissions — machine-specific, can contain
+# working-tree-only entries (e.g. shell exports) never meant to leave this
+# machine. Should never have been tracked in a public repo pulled onto the
+# production web root.
+.claude/

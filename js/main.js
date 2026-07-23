@@ -267,7 +267,7 @@ function validateForm(form) {
   });
 
   form.querySelectorAll('[type="email"]').forEach(inp => {
-    if (inp.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value)) {
+    if (inp.value && !/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(inp.value)) {
       inp.style.borderColor = '#DC2626';
       inp.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.1)';
       missing.push('valid email address');
@@ -599,7 +599,7 @@ async function loadAnnouncements() {
       <article class="news-card reveal">
         <div class="news-card-body">
           <span class="news-tag">Announcement</span>
-          <div class="news-date">${row.date || ''}</div>
+          <div class="news-date">${escHtml(row.date || '')}</div>
           <h3 class="news-title">${escHtml(row.title)}</h3>
           <p class="news-excerpt">${escHtml(row.body || '').substring(0, 200)}${row.body && row.body.length > 200 ? '…' : ''}</p>
         </div>
@@ -620,7 +620,7 @@ function showAlert(containerId, type, message) {
   if (!el) return;
   const icons = { success: 'fa-circle-check', error: 'fa-triangle-exclamation', info: 'fa-circle-info' };
   el.className = `form-alert alert-${type}`;
-  el.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
+  el.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${escHtml(message)}</span>`;
   el.style.display = 'flex';
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

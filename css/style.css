@@ -20,6 +20,11 @@
   --g-deep1: #0F4A27;
   --g-deep2: #0B3A1F;
   --g-deep3: #082E18;
+  /* Primary CTA button (Submit Abstract, Register, etc.) — distinct from the
+     brand green shades above; default/hover/pressed states. */
+  --btn-green:        #198754;
+  --btn-green-hover:   #157347;
+  --btn-green-active:  #12623C;
   --gold: #1F2937;
   --gold-dark: #000000;
   --gold-light: #6B7280;
@@ -334,37 +339,6 @@ p:last-child { margin-bottom: 0; }
   background-size: 48px 48px;
   will-change: transform;
 }
-.hero-bubbles {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 1;
-}
-.hero-bubble-wrap {
-  position: absolute;
-  will-change: transform;
-}
-.hero-bubble {
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 70%);
-  border: 1px solid rgba(255,255,255,0.14);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: rgba(255,255,255,0.55);
-  animation: bubbleFloat ease-in-out infinite;
-}
-@keyframes bubbleFloat {
-  0%, 100% { transform: translate(0, 0); }
-  50%      { transform: translate(12px, -26px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-bubble { animation: none; }
-}
 .hero-content {
   position: relative;
   z-index: 2;
@@ -549,17 +523,6 @@ p:last-child { margin-bottom: 0; }
   white-space: nowrap;
   border: 2px solid transparent;
 }
-.btn-primary {
-  background: #2d318c;
-  color: var(--white);
-  border-color: #2d318c;
-}
-.btn-primary:hover {
-  background: #21255e;
-  border-color: #21255e;
-  box-shadow: var(--shadow-gold);
-  transform: translateY(-1px);
-}
 .btn-secondary {
   background: transparent;
   color: var(--white);
@@ -570,15 +533,21 @@ p:last-child { margin-bottom: 0; }
   border-color: rgba(255,255,255,0.6);
 }
 .btn-green {
-  background: var(--g900);
+  background: var(--btn-green);
   color: var(--white);
-  border-color: var(--g900);
+  border-color: var(--btn-green);
 }
 .btn-green:hover {
-  background: var(--g700);
-  border-color: var(--g700);
+  background: var(--btn-green-hover);
+  border-color: var(--btn-green-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(27,94,32,0.3);
+  box-shadow: 0 4px 16px rgba(21,115,71,0.3);
+}
+.btn-green:active {
+  background: var(--btn-green-active);
+  border-color: var(--btn-green-active);
+  transform: translateY(0);
+  box-shadow: none;
 }
 .btn-outline-green {
   background: transparent;

@@ -42,6 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRkw0T0gNuD8JKpngWl3gVnAP7Z_9Jpo4Js_OxibEZCTER4C5dnl0dHZj18TDjGxUGJQ/exec';
 
+/* reCAPTCHA v3 — placeholder until registered at google.com/recaptcha/admin
+   (see Code.gs setup step 10). Harmless no-op until replaced: getRecaptchaToken()
+   below skips silently, and the Apps Script backend fails open until its
+   matching secret key is configured, so submissions keep working either way. */
+const RECAPTCHA_SITE_KEY = '6Ld4l2ItAAAAAPKyCxmt4VoEh4W1amhLowHMgH3E';
+
+function getRecaptchaToken(action) {
+  return new Promise((resolve) => {
+    if (typeof grecaptcha === 'undefined' || RECAPTCHA_SITE_KEY.indexOf('REPLACE_WITH') === 0) {
+      resolve('');
+      return;
+    }
+    grecaptcha.ready(() => {
+      grecaptcha.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve).catch(() => resolve(''));
+    });
+  });
+}
+
 /* --- Page scroll progress bar --- */
 (function initScrollProgress() {
   const bar = document.getElementById('scrollProgress');
@@ -128,11 +146,10 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRkw0T0gNuD8JK
   els.forEach(el => io.observe(el));
 })();
 
-/* --- Hero parallax (background grid + floating molecule bubbles) --- */
+/* --- Hero parallax (background grid) --- */
 (function initParallax() {
   const heroGrid = document.querySelector('.hero .hero-grid');
-  const bubbleWraps = document.querySelectorAll('.hero .hero-bubble-wrap');
-  if (!heroGrid && !bubbleWraps.length) return;
+  if (!heroGrid) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   let ticking = false;
@@ -140,12 +157,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRkw0T0gNuD8JK
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => {
-      const y = window.scrollY;
-      if (heroGrid) heroGrid.style.transform = `translateY(${y * 0.5}px)`;
-      bubbleWraps.forEach(el => {
-        const speed = parseFloat(el.dataset.speed) || 0.2;
-        el.style.transform = `translateY(${y * speed}px)`;
-      });
+      heroGrid.style.transform = `translateY(${window.scrollY * 0.5}px)`;
       ticking = false;
     });
   }, { passive: true });
@@ -380,9 +392,10 @@ async function submitAbstract(e) {
   };
 
   try {
-    data.pdfBase64    = await readFileAsBase64(pdfFile);
-    data.pdfFileName  = pdfFile.name;
-    data.pdfMimeType  = pdfFile.type;
+    data.pdfBase64      = await readFileAsBase64(pdfFile);
+    data.pdfFileName    = pdfFile.name;
+    data.pdfMimeType    = pdfFile.type;
+    data.recaptchaToken = await getRecaptchaToken('abstract');
 
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -425,6 +438,8 @@ async function submitRegistration(e) {
   };
 
   try {
+    data.recaptchaToken = await getRecaptchaToken('registration');
+
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -549,6 +564,7 @@ async function submitPayment(e, reg) {
       data.proofFileName = file.name;
       data.proofMimeType  = file.type;
     }
+    data.recaptchaToken = await getRecaptchaToken('payment');
 
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',

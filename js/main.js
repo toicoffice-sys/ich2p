@@ -382,7 +382,7 @@ async function submitAbstract(e) {
 
   const data = {
     form_type:         'abstract',
-    token:             'DLSL_ICH2P_2026',
+    token:             'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
     name:              form.name.value.trim(),
     affiliation:       form.affiliation.value.trim(),
     email:             form.email.value.trim(),
@@ -428,7 +428,7 @@ async function submitRegistration(e) {
 
   const data = {
     form_type:       'registration',
-    token:           'DLSL_ICH2P_2026',
+    token:           'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
     fullName:        form.fullName.value.trim(),
     institution:     form.institution.value.trim(),
     country:         form.country.value.trim(),
@@ -546,7 +546,7 @@ async function submitPayment(e, reg) {
 
   const data = {
     form_type:      'payment',
-    token:          'DLSL_ICH2P_2026',
+    token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
     regId:          reg.regId,
     email:          reg.email,
     bdoReferenceNo: refInput.value.trim(),

@@ -401,7 +401,7 @@ async function submitAbstract(e) {
 
   const data = {
     form_type:         'abstract',
-    token:             'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+    token:             'ab425c7a47eb202a13e7d6a5ec9abfaa83c124ac832f320a210bb1f69e6e9e94',
     name:              form.name.value.trim(),
     affiliation:       form.affiliation.value.trim(),
     email:             form.email.value.trim(),
@@ -467,7 +467,7 @@ function initEmailVerificationGate(opts) {
         method: 'POST',
         body: JSON.stringify({
           form_type:      'request_email_code',
-          token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+          token:          'ab425c7a47eb202a13e7d6a5ec9abfaa83c124ac832f320a210bb1f69e6e9e94',
           email:          email,
           recaptchaToken: recaptchaToken,
         }),
@@ -501,7 +501,7 @@ function initEmailVerificationGate(opts) {
         method: 'POST',
         body: JSON.stringify({
           form_type:      'verify_email_code',
-          token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+          token:          'ab425c7a47eb202a13e7d6a5ec9abfaa83c124ac832f320a210bb1f69e6e9e94',
           email:          email,
           code:           code,
           recaptchaToken: recaptchaToken,
@@ -542,7 +542,7 @@ async function submitRegistration(e) {
 
   const data = {
     form_type:       'registration',
-    token:           'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+    token:           'ab425c7a47eb202a13e7d6a5ec9abfaa83c124ac832f320a210bb1f69e6e9e94',
     fullName:        form.fullName.value.trim(),
     institution:     form.institution.value.trim(),
     country:         form.country.value.trim(),
@@ -655,7 +655,7 @@ async function payViaBdo(regId) {
       method: 'POST',
       body: JSON.stringify({
         form_type:      'request_bdo_checkout',
-        token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+        token:          'ab425c7a47eb202a13e7d6a5ec9abfaa83c124ac832f320a210bb1f69e6e9e94',
         regId:          regId,
         recaptchaToken: recaptchaToken,
       }),

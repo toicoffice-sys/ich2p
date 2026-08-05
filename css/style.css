@@ -851,6 +851,31 @@ select.form-control { cursor: pointer; }
 .form-help { font-size: var(--text-xs); color: var(--gray-400); margin-top: 2px; }
 .char-count { text-align: right; font-size: var(--text-xs); color: var(--gray-400); }
 
+/* Checkbox groups (Data Privacy Act consent, etc.) */
+.form-check-group {
+  margin: 20px 0;
+  padding: 14px 16px;
+  background: var(--g50);
+  border: 1px solid var(--g100);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.form-check-group.form-check-error {
+  border-color: #DC2626;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+}
+.form-check-label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.form-check-input {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--g800);
+  cursor: pointer;
+}
+.form-check-text { font-size: var(--text-sm); color: var(--gray-600); line-height: 1.6; }
+.form-check-text a { color: var(--g800); font-weight: 600; text-decoration: underline; }
+
 /* File upload */
 .file-upload-zone {
   border: 2px dashed var(--gray-300);

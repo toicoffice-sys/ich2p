@@ -265,6 +265,17 @@ function validateForm(form) {
   const missing = [];
 
   form.querySelectorAll('[required]').forEach(input => {
+    if (input.type === 'checkbox') {
+      const group = input.closest('.form-check-group');
+      if (!input.checked) {
+        if (group) group.classList.add('form-check-error');
+        missing.push('Data Privacy Act consent');
+        valid = false;
+      } else if (group) {
+        group.classList.remove('form-check-error');
+      }
+      return;
+    }
     const empty = !input.value || !input.value.trim();
     if (empty) {
       input.style.borderColor = '#DC2626';

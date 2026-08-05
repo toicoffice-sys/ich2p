@@ -245,9 +245,30 @@
           </div>
 
           <p style="text-align:right;font-size:var(--text-xs);color:var(--gray-400);margin-top:12px;">
-            You'll be redirected to checkout for BDO payment right after submitting.
+            We'll email you a verification code to confirm your address, then redirect you to checkout for BDO payment.
           </p>
         </form>
+      </div>
+
+      <div id="regVerifyStep" class="form-wrapper reveal" style="display:none;">
+        <h3 class="form-section-title" style="margin-top:0;"><i class="fas fa-envelope-circle-check"></i> Verify Your Email</h3>
+        <p style="font-size:var(--text-sm);color:var(--gray-500);margin-bottom:16px;">
+          We sent a 6-digit code to <strong id="regVerifyEmail"></strong>. Enter it below to complete your registration.
+        </p>
+        <div class="form-row full">
+          <div class="form-group">
+            <label for="regVerifyCode">Verification Code <span class="required">*</span></label>
+            <input type="text" id="regVerifyCode" class="form-control" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+          </div>
+        </div>
+        <div class="form-submit-row">
+          <button type="button" id="regResendCodeBtn" class="btn btn-outline-green">
+            <i class="fas fa-rotate"></i> Resend Code
+          </button>
+          <button type="button" id="regVerifyBtn" class="btn btn-green btn-lg">
+            <i class="fas fa-check"></i> Verify &amp; Complete Registration
+          </button>
+        </div>
       </div>
 
       <div class="reveal" style="margin-top:32px;">

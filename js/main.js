@@ -28,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     regForm.addEventListener('submit', submitRegistration);
     initFeeCalculator();
   }
+  const regVerifyBtn = document.getElementById('regVerifyBtn');
+  if (regVerifyBtn) regVerifyBtn.addEventListener('click', submitRegistrationVerification);
+  const regResendCodeBtn = document.getElementById('regResendCodeBtn');
+  if (regResendCodeBtn) regResendCodeBtn.addEventListener('click', resendRegistrationCode);
 
   /* Checkout page */
   if (document.getElementById('checkoutMain')) {
@@ -430,6 +434,8 @@ async function submitAbstract(e) {
 }
 
 /* --- Registration form --- */
+let pendingRegistrationData = null;
+
 async function submitRegistration(e) {
   e.preventDefault();
   const form = e.target;
@@ -456,22 +462,95 @@ async function submitRegistration(e) {
       body: JSON.stringify(data),
     });
     const result = await resp.json();
-    if (result.status === 'ok') {
-      sessionStorage.setItem('ich2p_pending_reg', JSON.stringify({
-        regId:     result.regId,
-        fullName:  result.fullName,
-        email:     result.email,
-        regType:   result.regType,
-        amountDue: result.amountDue,
-        currency:  result.currency,
-        tier:      result.tier,
-        bdoLink:   result.bdoLink,
-      }));
-      form.reset();
-      window.location.href = 'checkout.html';
-      return;
+    if (result.status === 'pending_verification') {
+      pendingRegistrationData = data;
+      showRegistrationVerifyStep(result.email);
     } else {
       throw new Error(result.message || 'Submission failed.');
+    }
+  } catch (err) {
+    showAlert('reg-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(btn, false);
+  }
+}
+
+function showRegistrationVerifyStep(email) {
+  document.getElementById('registrationForm').closest('.form-wrapper').style.display = 'none';
+  document.getElementById('regVerifyEmail').textContent = email;
+  const step = document.getElementById('regVerifyStep');
+  step.style.display = 'block';
+  step.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function storeAndRedirectToCheckout(result) {
+  sessionStorage.setItem('ich2p_pending_reg', JSON.stringify({
+    regId:     result.regId,
+    fullName:  result.fullName,
+    email:     result.email,
+    regType:   result.regType,
+    amountDue: result.amountDue,
+    currency:  result.currency,
+    tier:      result.tier,
+    bdoLink:   result.bdoLink,
+  }));
+  window.location.href = 'checkout.html';
+}
+
+async function submitRegistrationVerification() {
+  const codeInput = document.getElementById('regVerifyCode');
+  const code = codeInput.value.trim();
+  if (!code) {
+    showAlert('reg-alert-area', 'error', 'Please enter the code we emailed you.');
+    return;
+  }
+  if (!pendingRegistrationData) {
+    showAlert('reg-alert-area', 'error', 'Your session expired. Please fill out the registration form again.');
+    return;
+  }
+
+  const btn = document.getElementById('regVerifyBtn');
+  setLoading(btn, true);
+  try {
+    const recaptchaToken = await getRecaptchaToken('verify_registration');
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        form_type:      'verify_registration',
+        token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+        email:          pendingRegistrationData.email,
+        code:           code,
+        recaptchaToken: recaptchaToken,
+      }),
+    });
+    const result = await resp.json();
+    if (result.status === 'ok') {
+      storeAndRedirectToCheckout(result);
+    } else {
+      throw new Error(result.message || 'Verification failed.');
+    }
+  } catch (err) {
+    showAlert('reg-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(btn, false);
+  }
+}
+
+async function resendRegistrationCode() {
+  if (!pendingRegistrationData) return;
+  const btn = document.getElementById('regResendCodeBtn');
+  setLoading(btn, true);
+  try {
+    const recaptchaToken = await getRecaptchaToken('registration');
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(Object.assign({}, pendingRegistrationData, { recaptchaToken })),
+    });
+    const result = await resp.json();
+    if (result.status === 'pending_verification') {
+      showAlert('reg-alert-area', 'success', 'A new code has been sent to ' + result.email + '.');
+    } else {
+      throw new Error(result.message || 'Could not resend code.');
     }
   } catch (err) {
     showAlert('reg-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
@@ -531,6 +610,38 @@ function initCheckoutPage() {
   if (paymentForm) {
     paymentForm.addEventListener('submit', (e) => submitPayment(e, reg));
   }
+
+  const requestCodeBtn = document.getElementById('requestPaymentCodeBtn');
+  if (requestCodeBtn) {
+    requestCodeBtn.addEventListener('click', () => requestPaymentCode(reg.regId));
+  }
+}
+
+async function requestPaymentCode(regId) {
+  const btn = document.getElementById('requestPaymentCodeBtn');
+  setLoading(btn, true);
+  try {
+    const recaptchaToken = await getRecaptchaToken('request_payment_code');
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        form_type:      'request_payment_code',
+        token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+        regId:          regId,
+        recaptchaToken: recaptchaToken,
+      }),
+    });
+    const result = await resp.json();
+    if (result.status === 'ok') {
+      showAlert('checkout-alert-area', 'success', result.message);
+    } else {
+      throw new Error(result.message || 'Could not send verification code.');
+    }
+  } catch (err) {
+    showAlert('checkout-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(btn, false);
+  }
 }
 
 function formatMoney(amount, currency) {
@@ -542,6 +653,7 @@ async function submitPayment(e, reg) {
   e.preventDefault();
   const form = e.target;
   const refInput = document.getElementById('bdoReferenceNo');
+  const codeInput = document.getElementById('paymentVerifyCode');
 
   if (!refInput.value.trim()) {
     refInput.style.borderColor = '#DC2626';
@@ -552,16 +664,26 @@ async function submitPayment(e, reg) {
   refInput.style.borderColor = '';
   refInput.style.boxShadow = '';
 
+  if (!codeInput.value.trim()) {
+    codeInput.style.borderColor = '#DC2626';
+    codeInput.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.1)';
+    showAlert('checkout-alert-area', 'error', 'Please request and enter the verification code sent to your email first.');
+    return;
+  }
+  codeInput.style.borderColor = '';
+  codeInput.style.boxShadow = '';
+
   const btn = form.querySelector('[type="submit"]');
   setLoading(btn, true);
 
   const data = {
-    form_type:      'payment',
-    token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
-    regId:          reg.regId,
-    email:          reg.email,
-    bdoReferenceNo: refInput.value.trim(),
-    notes:          document.getElementById('paymentNotes').value.trim(),
+    form_type:        'payment',
+    token:            'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+    regId:            reg.regId,
+    email:            reg.email,
+    verificationCode: codeInput.value.trim(),
+    bdoReferenceNo:   refInput.value.trim(),
+    notes:            document.getElementById('paymentNotes').value.trim(),
   };
 
   try {

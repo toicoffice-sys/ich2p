@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260805100912">
+  <link rel="stylesheet" href="css/style.css?v=20260805102741">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <!-- reCAPTCHA v3 — placeholder until registered; see Code.gs setup step 10 -->
   <script src="https://www.google.com/recaptcha/api.js?render=6Ld4l2ItAAAAAPKyCxmt4VoEh4W1amhLowHMgH3E" defer></script>
@@ -88,94 +88,120 @@
       <div class="form-wrapper reveal">
         <form id="abstractForm" novalidate>
 
-          <h3 class="form-section-title"><i class="fas fa-user"></i> Author Information</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="name">Full Name <span class="required">*</span></label>
-              <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Maria Santos" required>
-            </div>
+          <h3 class="form-section-title"><i class="fas fa-envelope-circle-check"></i> Step 1 — Verify Your Email</h3>
+          <div class="form-row full">
             <div class="form-group">
               <label for="email">Email Address <span class="required">*</span></label>
-              <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div class="form-group">
-              <label for="affiliation">Institution / Affiliation <span class="required">*</span></label>
-              <input type="text" id="affiliation" name="affiliation" class="form-control" placeholder="e.g. De La Salle Lipa, Philippines" required>
-            </div>
-          </div>
-
-          <h3 class="form-section-title"><i class="fas fa-microscope"></i> Submission Details</h3>
-          <div class="form-row full">
-            <div class="form-group">
-              <label for="presentationType">Presentation Type <span class="required">*</span></label>
-              <select id="presentationType" name="presentationType" class="form-control" required>
-                <option value="" disabled selected>Select type…</option>
-                <option value="oral">Oral Presentation</option>
-                <option value="poster">Poster Presentation</option>
-                <option value="either">Either (committee decides)</option>
-                <option value="nonpaper">Non-Paper Presenter</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div class="form-group">
-              <label for="title">Paper Title <span class="required">*</span></label>
-              <input type="text" id="title" name="title" class="form-control" placeholder="Full title of your paper" required>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div class="form-group">
-              <label for="abstractText">Abstract <span class="required">*</span></label>
-              <textarea id="abstractText" name="abstractText" class="form-control" rows="8"
-                placeholder="Write your abstract here (300-500 words). Include a short introduction, summary of results, and conclusion." required></textarea>
-              <div class="char-count"><span id="abstractCount">0/500 words</span></div>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div class="form-group">
-              <label>Abstract PDF <span class="required">*</span></label>
-              <div class="file-upload-zone" id="abstractPdfDropZone">
-                <i class="fas fa-file-arrow-up"></i>
-                <p>Click to upload your formatted abstract</p>
-                <p class="file-hint">PDF only — max 10MB</p>
-                <div class="file-selected-name" id="abstractPdfFileName"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" style="flex:1;min-width:220px;" required>
+                <button type="button" id="sendEmailCodeBtn" class="btn btn-outline-green" style="white-space:nowrap;">
+                  <i class="fas fa-paper-plane"></i> Send Code
+                </button>
               </div>
-              <input type="file" id="abstractPdfFile" class="file-input-hidden" accept="application/pdf">
-              <div class="form-help">Required in addition to the text above — this is the official copy reviewers will read.</div>
+              <div class="form-help">We'll email you a 6-digit code to confirm this address before you fill out the rest of the form.</div>
+            </div>
+          </div>
+          <div class="form-row full" id="emailCodeRow" style="display:none;">
+            <div class="form-group">
+              <label for="emailVerifyCode">Verification Code <span class="required">*</span></label>
+              <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+                <input type="text" id="emailVerifyCode" class="form-control" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="max-width:160px;" autocomplete="one-time-code">
+                <button type="button" id="verifyEmailBtn" class="btn btn-gold">
+                  <i class="fas fa-check"></i> Verify
+                </button>
+                <button type="button" id="resendEmailCodeBtn" class="btn btn-outline-green">
+                  <i class="fas fa-rotate"></i> Resend
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="info-box" style="margin-top:16px;">
-            <div class="info-box-title"><i class="fas fa-lightbulb"></i> Writing Tips</div>
-            <ul style="font-size:var(--text-sm);color:var(--gray-600);padding-left:16px;line-height:1.8;">
-              <li>Written in English</li>
-              <li>Contains 300–500 words: short introduction, summary of results, and conclusion</li>
-              <li>Clearly state the research problem, objectives, and methodology</li>
-              <li>Highlight key results and their significance</li>
-            </ul>
-          </div>
+          <div id="abstractFormFields" style="display:none;">
+            <h3 class="form-section-title"><i class="fas fa-user"></i> Author Information</h3>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Maria Santos" required>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="affiliation">Institution / Affiliation <span class="required">*</span></label>
+                <input type="text" id="affiliation" name="affiliation" class="form-control" placeholder="e.g. De La Salle Lipa, Philippines" required>
+              </div>
+            </div>
 
-          <div class="form-check-group">
-            <label class="form-check-label">
-              <input type="checkbox" class="form-check-input" id="dataPrivacyConsent" name="dataPrivacyConsent" required>
-              <span class="form-check-text">I have read and agree to the <a href="https://www.dlsl.edu.ph/privacy-policy" target="_blank" rel="noopener">Data Privacy Act notice</a>. I consent to the collection and processing of my personal data for the purposes of this abstract submission. <span class="required">*</span></span>
-            </label>
-          </div>
+            <h3 class="form-section-title"><i class="fas fa-microscope"></i> Submission Details</h3>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="presentationType">Presentation Type <span class="required">*</span></label>
+                <select id="presentationType" name="presentationType" class="form-control" required>
+                  <option value="" disabled selected>Select type…</option>
+                  <option value="oral">Oral Presentation</option>
+                  <option value="poster">Poster Presentation</option>
+                  <option value="either">Either (committee decides)</option>
+                  <option value="nonpaper">Non-Paper Presenter</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="title">Paper Title <span class="required">*</span></label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Full title of your paper" required>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="abstractText">Abstract <span class="required">*</span></label>
+                <textarea id="abstractText" name="abstractText" class="form-control" rows="8"
+                  placeholder="Write your abstract here (300-500 words). Include a short introduction, summary of results, and conclusion." required></textarea>
+                <div class="char-count"><span id="abstractCount">0/500 words</span></div>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>Abstract PDF <span class="required">*</span></label>
+                <div class="file-upload-zone" id="abstractPdfDropZone">
+                  <i class="fas fa-file-arrow-up"></i>
+                  <p>Click to upload your formatted abstract</p>
+                  <p class="file-hint">PDF only — max 10MB</p>
+                  <div class="file-selected-name" id="abstractPdfFileName"></div>
+                </div>
+                <input type="file" id="abstractPdfFile" class="file-input-hidden" accept="application/pdf">
+                <div class="form-help">Required in addition to the text above — this is the official copy reviewers will read.</div>
+              </div>
+            </div>
 
-          <div class="form-submit-row">
-            <a href="topics.html" class="btn btn-outline-green">
-              <i class="fas fa-list"></i> View Topics
-            </a>
-            <button type="submit" class="btn btn-gold btn-lg">
-              <i class="fas fa-paper-plane"></i> Submit Abstract
-            </button>
-          </div>
+            <div class="info-box" style="margin-top:16px;">
+              <div class="info-box-title"><i class="fas fa-lightbulb"></i> Writing Tips</div>
+              <ul style="font-size:var(--text-sm);color:var(--gray-600);padding-left:16px;line-height:1.8;">
+                <li>Written in English</li>
+                <li>Contains 300–500 words: short introduction, summary of results, and conclusion</li>
+                <li>Clearly state the research problem, objectives, and methodology</li>
+                <li>Highlight key results and their significance</li>
+              </ul>
+            </div>
 
-          <p style="text-align:right;font-size:var(--text-xs);color:var(--gray-400);margin-top:12px;">
-            A confirmation email will be sent to your provided address upon successful submission.
-          </p>
+            <div class="form-check-group">
+              <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" id="dataPrivacyConsent" name="dataPrivacyConsent" required>
+                <span class="form-check-text">I have read and agree to the <a href="https://www.dlsl.edu.ph/privacy-policy" target="_blank" rel="noopener">Data Privacy Act notice</a>. I consent to the collection and processing of my personal data for the purposes of this abstract submission. <span class="required">*</span></span>
+              </label>
+            </div>
+
+            <div class="form-submit-row">
+              <a href="topics.html" class="btn btn-outline-green">
+                <i class="fas fa-list"></i> View Topics
+              </a>
+              <button type="submit" class="btn btn-gold btn-lg">
+                <i class="fas fa-paper-plane"></i> Submit Abstract
+              </button>
+            </div>
+
+            <p style="text-align:right;font-size:var(--text-xs);color:var(--gray-400);margin-top:12px;">
+              A confirmation email will be sent to your provided address upon successful submission.
+            </p>
+          </div>
         </form>
       </div>
 
@@ -229,7 +255,7 @@
     </div>
   </div>
 </footer>
-<script src="js/main.js?v=20260805100912"></script>
+<script src="js/main.js?v=20260805102741"></script>
 
 </body>
 </html>

@@ -20,6 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     abstractForm.addEventListener('submit', submitAbstract);
     initCharCount();
     initFileDropZone('abstractPdfDropZone', 'abstractPdfFile', 'abstractPdfFileName');
+    initEmailVerificationGate({
+      revealId:    'abstractFormFields',
+      alertAreaId: 'form-alert-area',
+    });
   }
 
   /* Registration form */
@@ -27,11 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (regForm) {
     regForm.addEventListener('submit', submitRegistration);
     initFeeCalculator();
+    initEmailVerificationGate({
+      revealId:    'registrationFormFields',
+      alertAreaId: 'reg-alert-area',
+    });
   }
-  const regVerifyBtn = document.getElementById('regVerifyBtn');
-  if (regVerifyBtn) regVerifyBtn.addEventListener('click', submitRegistrationVerification);
-  const regResendCodeBtn = document.getElementById('regResendCodeBtn');
-  if (regResendCodeBtn) regResendCodeBtn.addEventListener('click', resendRegistrationCode);
 
   /* Checkout page */
   if (document.getElementById('checkoutMain')) {
@@ -433,9 +437,102 @@ async function submitAbstract(e) {
   }
 }
 
-/* --- Registration form --- */
-let pendingRegistrationData = null;
+/*
+ * Generic "verify email, then reveal the rest of the form" gate — shared by
+ * the Registration and Abstract Submission forms. Both pages use the same
+ * element IDs (email, sendEmailCodeBtn, emailCodeRow, emailVerifyCode,
+ * verifyEmailBtn, resendEmailCodeBtn) since each page only has one such form;
+ * only the reveal target and alert area differ per page.
+ */
+function initEmailVerificationGate(opts) {
+  const emailInput = document.getElementById('email');
+  const sendBtn    = document.getElementById('sendEmailCodeBtn');
+  const codeRow    = document.getElementById('emailCodeRow');
+  const codeInput  = document.getElementById('emailVerifyCode');
+  const verifyBtn  = document.getElementById('verifyEmailBtn');
+  const resendBtn  = document.getElementById('resendEmailCodeBtn');
+  const reveal     = document.getElementById(opts.revealId);
+  if (!emailInput || !sendBtn || !reveal) return;
 
+  async function sendCode() {
+    const email = emailInput.value.trim();
+    if (!email) {
+      showAlert(opts.alertAreaId, 'error', 'Please enter your email address first.');
+      return;
+    }
+    setLoading(sendBtn, true);
+    try {
+      const recaptchaToken = await getRecaptchaToken('request_email_code');
+      const resp = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          form_type:      'request_email_code',
+          token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+          email:          email,
+          recaptchaToken: recaptchaToken,
+        }),
+      });
+      const result = await resp.json();
+      if (result.status === 'ok') {
+        codeRow.style.display = 'block';
+        codeInput.focus();
+        showAlert(opts.alertAreaId, 'success', result.message);
+      } else {
+        throw new Error(result.message || 'Could not send verification code.');
+      }
+    } catch (err) {
+      showAlert(opts.alertAreaId, 'error', err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(sendBtn, false);
+    }
+  }
+
+  async function verifyCode() {
+    const email = emailInput.value.trim();
+    const code = codeInput.value.trim();
+    if (!code) {
+      showAlert(opts.alertAreaId, 'error', 'Please enter the code we emailed you.');
+      return;
+    }
+    setLoading(verifyBtn, true);
+    try {
+      const recaptchaToken = await getRecaptchaToken('verify_email_code');
+      const resp = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          form_type:      'verify_email_code',
+          token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+          email:          email,
+          code:           code,
+          recaptchaToken: recaptchaToken,
+        }),
+      });
+      const result = await resp.json();
+      if (result.status === 'ok') {
+        emailInput.readOnly = true;
+        sendBtn.disabled = true;
+        codeInput.disabled = true;
+        verifyBtn.disabled = true;
+        if (resendBtn) resendBtn.disabled = true;
+        reveal.style.display = 'block';
+        showAlert(opts.alertAreaId, 'success', 'Email verified! Please complete the rest of the form below.');
+        reveal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        throw new Error(result.message || 'Verification failed.');
+      }
+    } catch (err) {
+      showAlert(opts.alertAreaId, 'error', err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(verifyBtn, false);
+    }
+  }
+
+  sendBtn.addEventListener('click', sendCode);
+  if (resendBtn) resendBtn.addEventListener('click', sendCode);
+  if (verifyBtn) verifyBtn.addEventListener('click', verifyCode);
+}
+
+/* --- Registration form --- */
 async function submitRegistration(e) {
   e.preventDefault();
   const form = e.target;
@@ -462,95 +559,22 @@ async function submitRegistration(e) {
       body: JSON.stringify(data),
     });
     const result = await resp.json();
-    if (result.status === 'pending_verification') {
-      pendingRegistrationData = data;
-      showRegistrationVerifyStep(result.email);
+    if (result.status === 'ok') {
+      sessionStorage.setItem('ich2p_pending_reg', JSON.stringify({
+        regId:     result.regId,
+        fullName:  result.fullName,
+        email:     result.email,
+        regType:   result.regType,
+        amountDue: result.amountDue,
+        currency:  result.currency,
+        tier:      result.tier,
+        bdoLink:   result.bdoLink,
+      }));
+      form.reset();
+      window.location.href = 'checkout.html';
+      return;
     } else {
       throw new Error(result.message || 'Submission failed.');
-    }
-  } catch (err) {
-    showAlert('reg-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
-  } finally {
-    setLoading(btn, false);
-  }
-}
-
-function showRegistrationVerifyStep(email) {
-  document.getElementById('registrationForm').closest('.form-wrapper').style.display = 'none';
-  document.getElementById('regVerifyEmail').textContent = email;
-  const step = document.getElementById('regVerifyStep');
-  step.style.display = 'block';
-  step.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function storeAndRedirectToCheckout(result) {
-  sessionStorage.setItem('ich2p_pending_reg', JSON.stringify({
-    regId:     result.regId,
-    fullName:  result.fullName,
-    email:     result.email,
-    regType:   result.regType,
-    amountDue: result.amountDue,
-    currency:  result.currency,
-    tier:      result.tier,
-    bdoLink:   result.bdoLink,
-  }));
-  window.location.href = 'checkout.html';
-}
-
-async function submitRegistrationVerification() {
-  const codeInput = document.getElementById('regVerifyCode');
-  const code = codeInput.value.trim();
-  if (!code) {
-    showAlert('reg-alert-area', 'error', 'Please enter the code we emailed you.');
-    return;
-  }
-  if (!pendingRegistrationData) {
-    showAlert('reg-alert-area', 'error', 'Your session expired. Please fill out the registration form again.');
-    return;
-  }
-
-  const btn = document.getElementById('regVerifyBtn');
-  setLoading(btn, true);
-  try {
-    const recaptchaToken = await getRecaptchaToken('verify_registration');
-    const resp = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        form_type:      'verify_registration',
-        token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
-        email:          pendingRegistrationData.email,
-        code:           code,
-        recaptchaToken: recaptchaToken,
-      }),
-    });
-    const result = await resp.json();
-    if (result.status === 'ok') {
-      storeAndRedirectToCheckout(result);
-    } else {
-      throw new Error(result.message || 'Verification failed.');
-    }
-  } catch (err) {
-    showAlert('reg-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
-  } finally {
-    setLoading(btn, false);
-  }
-}
-
-async function resendRegistrationCode() {
-  if (!pendingRegistrationData) return;
-  const btn = document.getElementById('regResendCodeBtn');
-  setLoading(btn, true);
-  try {
-    const recaptchaToken = await getRecaptchaToken('registration');
-    const resp = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(Object.assign({}, pendingRegistrationData, { recaptchaToken })),
-    });
-    const result = await resp.json();
-    if (result.status === 'pending_verification') {
-      showAlert('reg-alert-area', 'success', 'A new code has been sent to ' + result.email + '.');
-    } else {
-      throw new Error(result.message || 'Could not resend code.');
     }
   } catch (err) {
     showAlert('reg-alert-area', 'error', err.message || 'Something went wrong. Please try again.');

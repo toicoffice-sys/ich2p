@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260805100912">
+  <link rel="stylesheet" href="css/style.css?v=20260805102741">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <!-- reCAPTCHA v3 — placeholder until registered; see Code.gs setup step 10 -->
   <script src="https://www.google.com/recaptcha/api.js?render=6Ld4l2ItAAAAAPKyCxmt4VoEh4W1amhLowHMgH3E" defer></script>
@@ -123,8 +123,9 @@
         <div class="info-box info-box-gold" style="margin-top:16px;">
           <div class="info-box-title"><i class="fas fa-circle-info"></i> Registration &amp; Payment Process</div>
           <ol style="margin:8px 0 0;padding-left:20px;line-height:1.9;">
-            <li>Fill out and submit the registration form below.</li>
-            <li>We'll email you a 6-digit verification code — enter it on the page to confirm your address and complete your registration.</li>
+            <li>Enter your email address below and click "Send Code" — we'll email you a 6-digit verification code.</li>
+            <li>Enter the code to confirm your address, which reveals the rest of the registration form.</li>
+            <li>Fill out and submit the registration form.</li>
             <li>You'll then be taken to a checkout page with your amount due and a BDO payment link.</li>
             <li>After paying, submit your BDO reference number on that page. If it isn't matched automatically, you'll be asked to request a second verification code (sent to the same email) before we accept it — this confirms it's really you submitting the reference, not just anyone who happens to know your reference number.</li>
             <li>Our team verifies your payment and emails you a confirmation.</li>
@@ -179,102 +180,107 @@
       <div class="form-wrapper reveal">
         <form id="registrationForm" novalidate>
 
-          <h3 class="form-section-title"><i class="fas fa-user"></i> Personal Information</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fullName">Full Name <span class="required">*</span></label>
-              <input type="text" id="fullName" name="fullName" class="form-control" placeholder="As it should appear on your badge" required>
-            </div>
+          <h3 class="form-section-title"><i class="fas fa-envelope-circle-check"></i> Step 1 — Verify Your Email</h3>
+          <div class="form-row full">
             <div class="form-group">
               <label for="email">Email Address <span class="required">*</span></label>
-              <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" style="flex:1;min-width:220px;" required>
+                <button type="button" id="sendEmailCodeBtn" class="btn btn-outline-green" style="white-space:nowrap;">
+                  <i class="fas fa-paper-plane"></i> Send Code
+                </button>
+              </div>
+              <div class="form-help">We'll email you a 6-digit code to confirm this address before you fill out the rest of the form.</div>
             </div>
           </div>
-          <div class="form-row">
+          <div class="form-row full" id="emailCodeRow" style="display:none;">
             <div class="form-group">
-              <label for="institution">Institution / Organization <span class="required">*</span></label>
-              <input type="text" id="institution" name="institution" class="form-control" placeholder="e.g. De La Salle Lipa" required>
-            </div>
-            <div class="form-group">
-              <label for="country">Country <span class="required">*</span></label>
-              <input type="text" id="country" name="country" class="form-control" placeholder="e.g. Philippines" required>
-            </div>
-          </div>
-
-          <h3 class="form-section-title"><i class="fas fa-tag"></i> Registration Type</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="regType">Registration Category</label>
-              <select id="regType" name="regType" class="form-control">
-                <option value="" disabled selected>Select your registration type…</option>
-                <option value="ug_ph">Undergraduate Student (PH)</option>
-                <option value="grad_ph">Graduate Student (PH)</option>
-                <option value="prof_ph">Professional (PH)</option>
-                <option value="nonpaper_ph">Non-Paper Presenter (PH)</option>
-                <option value="student_foreign">Student (Foreign)</option>
-                <option value="prof_foreign">Professional (Foreign)</option>
-                <option value="nonpaper_foreign">Non-Paper Presenter (Foreign)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Selected Fee</label>
-              <div style="padding:12px 14px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-weight:700;color:var(--g800);font-size:var(--text-base);" id="selectedFee">
-                — Select a type above —
+              <label for="emailVerifyCode">Verification Code <span class="required">*</span></label>
+              <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+                <input type="text" id="emailVerifyCode" class="form-control" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="max-width:160px;" autocomplete="one-time-code">
+                <button type="button" id="verifyEmailBtn" class="btn btn-gold">
+                  <i class="fas fa-check"></i> Verify
+                </button>
+                <button type="button" id="resendEmailCodeBtn" class="btn btn-outline-green">
+                  <i class="fas fa-rotate"></i> Resend
+                </button>
               </div>
             </div>
           </div>
 
-          <h3 class="form-section-title"><i class="fas fa-ellipsis"></i> Additional Information</h3>
-          <div class="form-row full">
-            <div class="form-group">
-              <label for="specialRequests">Special Requests / Dietary Requirements</label>
-              <textarea id="specialRequests" name="specialRequests" class="form-control" rows="3"
-                placeholder="e.g. vegetarian meal, wheelchair access, nursing room, etc."></textarea>
-              <div class="form-help">Optional. We will accommodate requests as best as possible.</div>
+          <div id="registrationFormFields" style="display:none;">
+            <h3 class="form-section-title"><i class="fas fa-user"></i> Personal Information</h3>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="fullName">Full Name <span class="required">*</span></label>
+                <input type="text" id="fullName" name="fullName" class="form-control" placeholder="As it should appear on your badge" required>
+              </div>
             </div>
-          </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="institution">Institution / Organization <span class="required">*</span></label>
+                <input type="text" id="institution" name="institution" class="form-control" placeholder="e.g. De La Salle Lipa" required>
+              </div>
+              <div class="form-group">
+                <label for="country">Country <span class="required">*</span></label>
+                <input type="text" id="country" name="country" class="form-control" placeholder="e.g. Philippines" required>
+              </div>
+            </div>
 
-          <div class="form-check-group">
-            <label class="form-check-label">
-              <input type="checkbox" class="form-check-input" id="dataPrivacyConsent" name="dataPrivacyConsent" required>
-              <span class="form-check-text">I have read and agree to the <a href="https://www.dlsl.edu.ph/privacy-policy" target="_blank" rel="noopener">Data Privacy Act notice</a>. I consent to the collection and processing of my personal data for the purposes of this conference registration. <span class="required">*</span></span>
-            </label>
-          </div>
+            <h3 class="form-section-title"><i class="fas fa-tag"></i> Registration Type</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="regType">Registration Category</label>
+                <select id="regType" name="regType" class="form-control">
+                  <option value="" disabled selected>Select your registration type…</option>
+                  <option value="ug_ph">Undergraduate Student (PH)</option>
+                  <option value="grad_ph">Graduate Student (PH)</option>
+                  <option value="prof_ph">Professional (PH)</option>
+                  <option value="nonpaper_ph">Non-Paper Presenter (PH)</option>
+                  <option value="student_foreign">Student (Foreign)</option>
+                  <option value="prof_foreign">Professional (Foreign)</option>
+                  <option value="nonpaper_foreign">Non-Paper Presenter (Foreign)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Selected Fee</label>
+                <div style="padding:12px 14px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--r-md);font-weight:700;color:var(--g800);font-size:var(--text-base);" id="selectedFee">
+                  — Select a type above —
+                </div>
+              </div>
+            </div>
 
-          <div class="form-submit-row">
-            <a href="abstract-submission.html" class="btn btn-outline-green">
-              <i class="fas fa-file-alt"></i> Submit Abstract
-            </a>
-            <button type="submit" class="btn btn-gold btn-lg">
-              <i class="fas fa-user-plus"></i> Submit Registration
-            </button>
-          </div>
+            <h3 class="form-section-title"><i class="fas fa-ellipsis"></i> Additional Information</h3>
+            <div class="form-row full">
+              <div class="form-group">
+                <label for="specialRequests">Special Requests / Dietary Requirements</label>
+                <textarea id="specialRequests" name="specialRequests" class="form-control" rows="3"
+                  placeholder="e.g. vegetarian meal, wheelchair access, nursing room, etc."></textarea>
+                <div class="form-help">Optional. We will accommodate requests as best as possible.</div>
+              </div>
+            </div>
 
-          <p style="text-align:right;font-size:var(--text-xs);color:var(--gray-400);margin-top:12px;">
-            We'll email you a verification code to confirm your address, then redirect you to checkout for BDO payment.
-          </p>
+            <div class="form-check-group">
+              <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" id="dataPrivacyConsent" name="dataPrivacyConsent" required>
+                <span class="form-check-text">I have read and agree to the <a href="https://www.dlsl.edu.ph/privacy-policy" target="_blank" rel="noopener">Data Privacy Act notice</a>. I consent to the collection and processing of my personal data for the purposes of this conference registration. <span class="required">*</span></span>
+              </label>
+            </div>
+
+            <div class="form-submit-row">
+              <a href="abstract-submission.html" class="btn btn-outline-green">
+                <i class="fas fa-file-alt"></i> Submit Abstract
+              </a>
+              <button type="submit" class="btn btn-gold btn-lg">
+                <i class="fas fa-user-plus"></i> Submit Registration
+              </button>
+            </div>
+
+            <p style="text-align:right;font-size:var(--text-xs);color:var(--gray-400);margin-top:12px;">
+              You'll be redirected to checkout for BDO payment right after submitting.
+            </p>
+          </div>
         </form>
-      </div>
-
-      <div id="regVerifyStep" class="form-wrapper reveal" style="display:none;">
-        <h3 class="form-section-title" style="margin-top:0;"><i class="fas fa-envelope-circle-check"></i> Verify Your Email</h3>
-        <p style="font-size:var(--text-sm);color:var(--gray-500);margin-bottom:16px;">
-          We sent a 6-digit code to <strong id="regVerifyEmail"></strong>. Enter it below to complete your registration.
-        </p>
-        <div class="form-row full">
-          <div class="form-group">
-            <label for="regVerifyCode">Verification Code <span class="required">*</span></label>
-            <input type="text" id="regVerifyCode" class="form-control" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
-          </div>
-        </div>
-        <div class="form-submit-row">
-          <button type="button" id="regResendCodeBtn" class="btn btn-outline-green">
-            <i class="fas fa-rotate"></i> Resend Code
-          </button>
-          <button type="button" id="regVerifyBtn" class="btn btn-gold btn-lg">
-            <i class="fas fa-check"></i> Verify &amp; Complete Registration
-          </button>
-        </div>
       </div>
 
       <div class="reveal" style="margin-top:32px;">
@@ -329,7 +335,7 @@
     </div>
   </div>
 </footer>
-<script src="js/main.js?v=20260805100912"></script>
+<script src="js/main.js?v=20260805102741"></script>
 
 </body>
 </html>

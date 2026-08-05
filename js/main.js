@@ -595,9 +595,22 @@ const REG_TYPE_LABELS = {
 };
 
 function initCheckoutPage() {
-  const raw = sessionStorage.getItem('ich2p_pending_reg');
   const empty = document.getElementById('checkoutEmpty');
   const main  = document.getElementById('checkoutMain');
+
+  // Returning from BDO's hosted payment page — handleBdoSaResult_() redirects
+  // here with ?payment=success|failed|error (+ &regId=... when known). Show
+  // the matching result screen instead of the normal checkout form.
+  const params = new URLSearchParams(window.location.search);
+  const paymentStatus = params.get('payment');
+  if (paymentStatus === 'success' || paymentStatus === 'failed' || paymentStatus === 'error') {
+    const screenId = paymentStatus === 'success' ? 'checkoutSuccess' : paymentStatus === 'failed' ? 'checkoutFailed' : 'checkoutError';
+    document.getElementById(screenId).style.display = 'block';
+    if (paymentStatus === 'success') sessionStorage.removeItem('ich2p_pending_reg');
+    return;
+  }
+
+  const raw = sessionStorage.getItem('ich2p_pending_reg');
   if (!raw) {
     empty.style.display = 'block';
     return;
@@ -619,53 +632,13 @@ function initCheckoutPage() {
 
   const amountLabel = formatMoney(reg.amountDue, reg.currency);
   document.getElementById('sumRegId').textContent = reg.regId;
-  document.getElementById('sumRegIdInline').textContent = reg.regId;
   document.getElementById('sumName').textContent = reg.fullName || '—';
   document.getElementById('sumRegType').textContent = REG_TYPE_LABELS[reg.regType] || reg.regType || '—';
   document.getElementById('sumTier').textContent = reg.tier === 'late' ? 'Late Registration' : 'Regular Registration';
   document.getElementById('sumAmount').textContent = amountLabel;
 
   const payBtn = document.getElementById('bdoPayBtn');
-  if (payBtn) payBtn.href = reg.bdoLink || '#';
-
-  initFileDropZone('proofDropZone', 'proofFile', 'proofFileName');
-
-  const paymentForm = document.getElementById('paymentForm');
-  if (paymentForm) {
-    paymentForm.addEventListener('submit', (e) => submitPayment(e, reg));
-  }
-
-  const requestCodeBtn = document.getElementById('requestPaymentCodeBtn');
-  if (requestCodeBtn) {
-    requestCodeBtn.addEventListener('click', () => requestPaymentCode(reg.regId));
-  }
-}
-
-async function requestPaymentCode(regId) {
-  const btn = document.getElementById('requestPaymentCodeBtn');
-  setLoading(btn, true);
-  try {
-    const recaptchaToken = await getRecaptchaToken('request_payment_code');
-    const resp = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        form_type:      'request_payment_code',
-        token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
-        regId:          regId,
-        recaptchaToken: recaptchaToken,
-      }),
-    });
-    const result = await resp.json();
-    if (result.status === 'ok') {
-      showAlert('checkout-alert-area', 'success', result.message);
-    } else {
-      throw new Error(result.message || 'Could not send verification code.');
-    }
-  } catch (err) {
-    showAlert('checkout-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
-  } finally {
-    setLoading(btn, false);
-  }
+  if (payBtn) payBtn.addEventListener('click', () => payViaBdo(reg.regId));
 }
 
 function formatMoney(amount, currency) {
@@ -673,72 +646,38 @@ function formatMoney(amount, currency) {
   return symbol + Number(amount).toLocaleString('en-US');
 }
 
-async function submitPayment(e, reg) {
-  e.preventDefault();
-  const form = e.target;
-  const refInput = document.getElementById('bdoReferenceNo');
-  const codeInput = document.getElementById('paymentVerifyCode');
-
-  if (!refInput.value.trim()) {
-    refInput.style.borderColor = '#DC2626';
-    refInput.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.1)';
-    showAlert('checkout-alert-area', 'error', 'Please enter your BDO reference / transaction number.');
-    return;
-  }
-  refInput.style.borderColor = '';
-  refInput.style.boxShadow = '';
-
-  if (!codeInput.value.trim()) {
-    codeInput.style.borderColor = '#DC2626';
-    codeInput.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.1)';
-    showAlert('checkout-alert-area', 'error', 'Please request and enter the verification code sent to your email first.');
-    return;
-  }
-  codeInput.style.borderColor = '';
-  codeInput.style.boxShadow = '';
-
-  const btn = form.querySelector('[type="submit"]');
+async function payViaBdo(regId) {
+  const btn = document.getElementById('bdoPayBtn');
   setLoading(btn, true);
-
-  const data = {
-    form_type:        'payment',
-    token:            'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
-    regId:            reg.regId,
-    email:            reg.email,
-    verificationCode: codeInput.value.trim(),
-    bdoReferenceNo:   refInput.value.trim(),
-    notes:            document.getElementById('paymentNotes').value.trim(),
-  };
-
   try {
-    const fileInput = document.getElementById('proofFile');
-    const file = fileInput && fileInput.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        throw new Error('Proof of payment file exceeds 5MB. Please upload a smaller file.');
-      }
-      data.proofBase64   = await readFileAsBase64(file);
-      data.proofFileName = file.name;
-      data.proofMimeType  = file.type;
-    }
-    data.recaptchaToken = await getRecaptchaToken('payment');
-
+    const recaptchaToken = await getRecaptchaToken('request_bdo_checkout');
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        form_type:      'request_bdo_checkout',
+        token:          'b308a11947aa2dee09cff6f58ddc2212569de6b6b62c8627',
+        regId:          regId,
+        recaptchaToken: recaptchaToken,
+      }),
     });
     const result = await resp.json();
-    if (result.status === 'ok') {
-      sessionStorage.removeItem('ich2p_pending_reg');
-      document.getElementById('checkoutMain').style.display = 'none';
-      document.getElementById('checkoutDone').style.display = 'block';
-      document.getElementById('checkoutDone').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      throw new Error(result.message || 'Submission failed.');
+    if (result.status !== 'ok') {
+      throw new Error(result.message || 'Could not start the payment. Please try again.');
     }
+
+    const form = document.getElementById('bdoRedirectForm');
+    form.action = result.actionUrl;
+    form.innerHTML = '';
+    Object.keys(result.fields).forEach((name) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = result.fields[name];
+      form.appendChild(input);
+    });
+    form.submit();
   } catch (err) {
     showAlert('checkout-alert-area', 'error', err.message || 'Something went wrong. Please try again.');
-  } finally {
     setLoading(btn, false);
   }
 }

@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260805102741">
+  <link rel="stylesheet" href="css/style.css?v=20260805195116">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <!-- reCAPTCHA v3 — placeholder until registered; see Code.gs setup step 10 -->
   <script src="https://www.google.com/recaptcha/api.js?render=6Ld4l2ItAAAAAPKyCxmt4VoEh4W1amhLowHMgH3E" defer></script>
@@ -58,7 +58,7 @@
       <span>Checkout</span>
     </div>
     <h1>Complete Your Payment</h1>
-    <p class="lead">Pay via BDO. Your slot is usually confirmed automatically — if you don't get a confirmation email shortly after paying, request a verification code and submit your reference number below so our team can verify it by hand.</p>
+    <p class="lead">Pay securely via BDO — your slot is confirmed automatically the moment your payment completes, no reference number to submit.</p>
   </div>
 </div>
 
@@ -97,83 +97,51 @@
           </table>
         </div>
 
-        <!-- Step 1: Pay via BDO -->
-        <div class="form-wrapper reveal" style="margin-bottom:28px;">
-          <h3 class="form-section-title" style="margin-top:0;"><span class="step-num">1</span> Pay via BDO</h3>
+        <!-- Pay via BDO — automatic verification via CyberSource Secure Acceptance -->
+        <div class="form-wrapper reveal">
+          <h3 class="form-section-title" style="margin-top:0;"><i class="fas fa-building-columns"></i> Pay via BDO</h3>
           <div class="info-box" style="margin-bottom:20px;">
-            <div class="info-box-title"><i class="fas fa-circle-exclamation"></i> Before You Pay</div>
-            Enter the <strong>exact amount</strong> shown above, and put your <strong>Reference No.</strong> (<span id="sumRegIdInline">—</span>) in the payment description / notes field on the BDO page. This lets us match your payment quickly.
+            <div class="info-box-title"><i class="fas fa-circle-info"></i> Automatic Verification</div>
+            Clicking below takes you to BDO's secure payment page. Once your payment completes, you're brought straight back here with your slot automatically confirmed — no reference number to submit, no waiting for manual verification.
           </div>
           <div style="text-align:center;">
-            <a id="bdoPayBtn" href="#" target="_blank" rel="noopener" class="btn btn-green btn-lg">
-              <i class="fas fa-building-columns"></i> Pay via BDO Checkout
-            </a>
-            <p style="margin-top:12px;font-size:var(--text-xs);color:var(--gray-400);">Opens the BDO Link.Biz.Ph secure payment page in a new tab.</p>
+            <button type="button" id="bdoPayBtn" class="btn btn-gold btn-lg">
+              <i class="fas fa-building-columns"></i> Pay via BDO
+            </button>
+            <p style="margin-top:12px;font-size:var(--text-xs);color:var(--gray-400);">You'll be redirected to BDO's secure payment page.</p>
           </div>
         </div>
-
-        <!-- Step 2: Submit reference number (fallback if automatic verification hasn't come through) -->
-        <div class="form-wrapper reveal">
-          <h3 class="form-section-title" style="margin-top:0;"><span class="step-num">2</span> Didn't get a confirmation email? Submit your reference manually</h3>
-          <p style="font-size:var(--text-sm);color:var(--gray-500);margin:0 0 16px;">
-            First, click "Send Code to My Email" below — we'll email a 6-digit code to the address you registered with. Enter it along with your BDO reference number to confirm it's really you submitting this.
-          </p>
-          <form id="paymentForm" novalidate>
-            <div class="form-row full">
-              <div class="form-group">
-                <label>Email Verification <span class="required">*</span></label>
-                <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
-                  <input type="text" id="paymentVerifyCode" class="form-control" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="max-width:160px;" autocomplete="one-time-code">
-                  <button type="button" id="requestPaymentCodeBtn" class="btn btn-outline-green">
-                    <i class="fas fa-paper-plane"></i> Send Code to My Email
-                  </button>
-                </div>
-                <div class="form-help">We'll send a code to the email you registered with, to confirm it's really you before we accept this payment reference.</div>
-              </div>
-            </div>
-
-            <div class="form-row full">
-              <div class="form-group">
-                <label for="bdoReferenceNo">BDO Reference / Transaction No. <span class="required">*</span></label>
-                <input type="text" id="bdoReferenceNo" name="bdoReferenceNo" class="form-control" placeholder="e.g. the confirmation / trace number from BDO" required>
-              </div>
-            </div>
-
-            <div class="form-row full">
-              <div class="form-group">
-                <label>Proof of Payment (optional)</label>
-                <div class="file-upload-zone" id="proofDropZone">
-                  <i class="fas fa-cloud-arrow-up"></i>
-                  <p>Click to upload a screenshot or receipt</p>
-                  <p class="file-hint">JPG, PNG, or PDF — max 5MB</p>
-                  <div class="file-selected-name" id="proofFileName"></div>
-                </div>
-                <input type="file" id="proofFile" class="file-input-hidden" accept="image/png,image/jpeg,application/pdf">
-              </div>
-            </div>
-
-            <div class="form-row full">
-              <div class="form-group">
-                <label for="paymentNotes">Notes (optional)</label>
-                <textarea id="paymentNotes" name="paymentNotes" class="form-control" rows="2" placeholder="Anything else the organizers should know about this payment"></textarea>
-              </div>
-            </div>
-
-            <div class="form-submit-row">
-              <button type="submit" class="btn btn-gold btn-lg">
-                <i class="fas fa-paper-plane"></i> Submit for Verification
-              </button>
-            </div>
-          </form>
-        </div>
+        <form id="bdoRedirectForm" method="POST" style="display:none;"></form>
 
       </div>
 
-      <!-- Shown after successful submission -->
-      <div id="checkoutDone" class="reveal" style="display:none;">
+      <!-- Shown after returning from BDO having paid successfully -->
+      <div id="checkoutSuccess" class="reveal" style="display:none;">
         <div class="info-box">
-          <div class="info-box-title"><i class="fas fa-circle-check"></i> Payment Reference Submitted</div>
-          Thank you! Our team will verify your payment against BDO records and email you a confirmation, usually within 1–2 business days.
+          <div class="info-box-title"><i class="fas fa-circle-check"></i> Payment Confirmed</div>
+          Thank you! Your payment has been received and automatically verified. A confirmation email is on its way to you.
+        </div>
+        <div style="text-align:center;margin-top:24px;">
+          <a href="index.html" class="btn btn-outline-green btn-lg"><i class="fas fa-house"></i> Back to Home</a>
+        </div>
+      </div>
+
+      <!-- Shown after returning from BDO having declined/cancelled -->
+      <div id="checkoutFailed" class="reveal" style="display:none;">
+        <div class="info-box info-box-gold">
+          <div class="info-box-title"><i class="fas fa-triangle-exclamation"></i> Payment Not Completed</div>
+          Your payment was not completed or was declined by BDO. No charge was made. You can try again below, or contact us at <a href="mailto:ich2p.dlsl@gmail.com">ich2p.dlsl@gmail.com</a> if you keep running into trouble.
+        </div>
+        <div style="text-align:center;margin-top:24px;">
+          <a href="checkout.html" class="btn btn-gold btn-lg"><i class="fas fa-rotate"></i> Try Again</a>
+        </div>
+      </div>
+
+      <!-- Shown if something went wrong verifying BDO's response -->
+      <div id="checkoutError" class="reveal" style="display:none;">
+        <div class="info-box info-box-gold">
+          <div class="info-box-title"><i class="fas fa-circle-exclamation"></i> Couldn't Confirm Payment Status</div>
+          We couldn't verify the result of your payment attempt. If BDO charged you, please don't pay again — contact us at <a href="mailto:ich2p.dlsl@gmail.com">ich2p.dlsl@gmail.com</a> with your Reference No. so we can check manually.
         </div>
         <div style="text-align:center;margin-top:24px;">
           <a href="index.html" class="btn btn-outline-green btn-lg"><i class="fas fa-house"></i> Back to Home</a>
@@ -223,7 +191,7 @@
     </div>
   </div>
 </footer>
-<script src="js/main.js?v=20260805102741"></script>
+<script src="js/main.js?v=20260805195116"></script>
 
 </body>
 </html>

@@ -557,6 +557,26 @@ p:last-child { margin-bottom: 0; }
 .btn-outline-green:hover {
   background: var(--g100);
 }
+/* Gold accent — reserved for the actual form-submission actions
+   (Submit Abstract, Submit Registration, Verify & Complete Registration,
+   Submit for Verification), not general navigation CTAs, which stay green. */
+.btn-gold {
+  background: #B88A1A;
+  color: var(--white);
+  border-color: #B88A1A;
+}
+.btn-gold:hover {
+  background: #9A7315;
+  border-color: #9A7315;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(184,138,26,0.3);
+}
+.btn-gold:active {
+  background: #9A7315;
+  border-color: #9A7315;
+  transform: translateY(0);
+  box-shadow: none;
+}
 .btn-lg { padding: 14px 32px; font-size: var(--text-base); }
 .btn-sm { padding: 8px 16px; font-size: var(--text-xs); }
 

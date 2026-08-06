@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRkw0T0gNuD8JKpngWl3gVnAP7Z_9Jpo4Js_OxibEZCTER4C5dnl0dHZj18TDjGxUGJQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybab32wWfjlalq_dOmovR1yoM9KZeaXSFOqWVn0r_KsuUGcoMjJreMBeTKC1NJBrGJiw/exec';
 
 /* reCAPTCHA v3 — placeholder until registered at google.com/recaptcha/admin
    (see Code.gs setup step 10). Harmless no-op until replaced: getRecaptchaToken()

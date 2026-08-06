@@ -568,7 +568,6 @@ async function submitRegistration(e) {
         amountDue: result.amountDue,
         currency:  result.currency,
         tier:      result.tier,
-        bdoLink:   result.bdoLink,
       }));
       form.reset();
       window.location.href = 'checkout.html';

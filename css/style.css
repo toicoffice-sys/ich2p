@@ -1175,7 +1175,7 @@ select.form-control { cursor: pointer; }
 .footer-brand .footer-logo {
   height: 44px;
   width: auto;
-  filter: brightness(0) invert(1);
+  /* filter: brightness(0) invert(1); */
   opacity: 0.8;
   margin-bottom: 16px;
 }

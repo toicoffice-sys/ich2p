@@ -637,7 +637,7 @@ function initCheckoutPage() {
   document.getElementById('sumAmount').textContent = amountLabel;
 
   const payBtn = document.getElementById('bdoPayBtn');
-  if (payBtn) payBtn.addEventListener('click', () => payViaBdo(reg.regId));
+  if (payBtn) payBtn.addEventListener('click', () => payViaBdo(reg.regId, reg.email));
 }
 
 function formatMoney(amount, currency) {
@@ -645,7 +645,7 @@ function formatMoney(amount, currency) {
   return symbol + Number(amount).toLocaleString('en-US');
 }
 
-async function payViaBdo(regId) {
+async function payViaBdo(regId, email) {
   const btn = document.getElementById('bdoPayBtn');
   setLoading(btn, true);
   try {
@@ -656,6 +656,7 @@ async function payViaBdo(regId) {
         form_type:      'request_bdo_checkout',
         token:          'ab425c7a47eb202a13e7d6a5ec9abfaa83c124ac832f320a210bb1f69e6e9e94',
         regId:          regId,
+        email:          email,
         recaptchaToken: recaptchaToken,
       }),
     });

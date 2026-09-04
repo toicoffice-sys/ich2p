@@ -439,16 +439,6 @@ p:last-child { margin-bottom: 0; }
   gap: 12px;
   align-items: center;
 }
-.hero-learn-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255,255,255,0.85);
-  font-weight: 600;
-  padding: 0 4px;
-  transition: color 0.2s ease-out;
-}
-.hero-learn-more:hover { color: var(--white); }
 
 /* Countdown */
 .hero-countdown {

@@ -344,6 +344,13 @@ p:last-child { margin-bottom: 0; }
   z-index: 2;
   max-width: 760px;
 }
+/* Size the poster column to the poster itself (400px, see #heroPoster) instead
+   of an even 1fr split — otherwise the column is ~150px wider than the image,
+   stacking dead space on top of the text/poster gap. Scoped to min-width so it
+   never competes with the max-width:768px stacking rule below. */
+@media (min-width: 769px) {
+  .hero .grid-2 { grid-template-columns: 1fr 400px; }
+}
 @keyframes heroFadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -389,16 +396,16 @@ p:last-child { margin-bottom: 0; }
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.3);
   color: var(--white);
-  padding: 6px 16px;
+  padding: 8px 18px;
   border-radius: var(--r-full);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
   letter-spacing: 0.5px;
   margin-bottom: 24px;
 }
-.hero-badge i { font-size: 10px; }
+.hero-badge i { font-size: 11px; }
 .hero-title {
-  font-size: clamp(2rem, 5.5vw, 3.5rem);
+  font-size: clamp(2.25rem, 6.5vw, 4.25rem);
   font-weight: 800;
   color: var(--white);
   line-height: 1.1;
@@ -412,10 +419,10 @@ p:last-child { margin-bottom: 0; }
   color: transparent;
 }
 .hero-subtitle {
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   color: rgba(255,255,255,0.75);
   margin-bottom: 28px;
-  max-width: 600px;
+  max-width: 640px;
   line-height: 1.5;
 }
 .hero-meta {
@@ -429,10 +436,10 @@ p:last-child { margin-bottom: 0; }
   align-items: center;
   gap: 8px;
   color: rgba(255,255,255,0.85);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 500;
 }
-.hero-meta-item i { color: var(--g100); width: 16px; }
+.hero-meta-item i { color: var(--g100); width: 16px; font-size: var(--text-lg); }
 .hero-actions {
   display: flex;
   flex-wrap: wrap;

@@ -1409,6 +1409,9 @@ select.form-control { cursor: pointer; }
   .hero-logos .logo-icmet-hero { height: 36px; }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .hero-actions .btn { text-align: center; justify-content: center; }
+  .hero-countdown { gap: 6px; }
+  .countdown-unit { min-width: 44px; }
+  .countdown-num { font-size: var(--text-lg); padding: 7px 6px; min-width: 44px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .gallery-grid { grid-template-columns: 1fr; }
 }

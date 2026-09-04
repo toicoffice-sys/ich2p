@@ -350,6 +350,13 @@ p:last-child { margin-bottom: 0; }
    never competes with the max-width:768px stacking rule below. */
 @media (min-width: 769px) {
   .hero .grid-2 { grid-template-columns: 1fr 400px; }
+  #heroPoster { margin-left: auto; }
+}
+@media (max-width: 768px) {
+  /* Stacked single column here — center the poster below the text instead of
+     the desktop's "flush right against the Register button" alignment, which
+     has no reference point once the columns stack. */
+  #heroPoster { margin-left: auto; margin-right: auto; }
 }
 @keyframes heroFadeUp {
   from { opacity: 0; transform: translateY(20px); }

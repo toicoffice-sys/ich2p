@@ -20,6 +20,10 @@
   --g-deep1: #0F4A27;
   --g-deep2: #0B3A1F;
   --g-deep3: #082E18;
+  /* Shared gradient-text recipes — reused on every dark-bg heading (hero, page
+     headers) and every light-bg heading (section titles) for a consistent look. */
+  --gradient-heading-dark: linear-gradient(135deg, var(--white) 0%, var(--g100) 55%, #8FDDAA 100%);
+  --gradient-heading-light: linear-gradient(135deg, var(--g600) 0%, var(--g900) 100%);
   /* Primary CTA button (Submit Abstract, Register, etc.) — distinct from the
      brand green shades above; default/hover/pressed states. */
   --btn-green:        #198754;
@@ -122,9 +126,15 @@ p { margin-bottom: 1rem; }
 p:last-child { margin-bottom: 0; }
 
 .section-title {
+  display: inline-block;
+  max-width: 100%;
   font-size: clamp(1.75rem, 4vw, var(--text-4xl));
-  color: var(--g900);
   margin-bottom: 12px;
+  background: var(--gradient-heading-light);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 .section-subtitle {
   font-size: var(--text-lg);
@@ -402,13 +412,19 @@ p:last-child { margin-bottom: 0; }
   font-weight: 800;
   color: var(--white);
   line-height: 1.1;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
-.hero-title .highlight { color: var(--g100); }
+.hero-title .highlight {
+  background: var(--gradient-heading-dark);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
 .hero-subtitle {
   font-size: var(--text-xl);
   color: rgba(255,255,255,0.75);
-  margin-bottom: 32px;
+  margin-bottom: 28px;
   max-width: 600px;
   line-height: 1.5;
 }
@@ -416,7 +432,7 @@ p:last-child { margin-bottom: 0; }
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 .hero-meta-item {
   display: flex;
@@ -438,7 +454,7 @@ p:last-child { margin-bottom: 0; }
 .hero-countdown {
   display: flex;
   gap: 16px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 .countdown-unit {
@@ -497,9 +513,15 @@ p:last-child { margin-bottom: 0; }
 .page-breadcrumb a:hover { color: var(--g100); }
 .page-breadcrumb i { font-size: 10px; }
 .page-header h1 {
-  color: var(--white);
+  display: inline-block;
+  max-width: 100%;
   font-size: clamp(1.75rem, 4vw, var(--text-4xl));
   margin-bottom: 12px;
+  background: var(--gradient-heading-dark);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 .page-header .lead {
   color: rgba(255,255,255,0.70);
